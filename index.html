@@ -1123,10 +1123,14 @@
 
   // custom confirm (native window.confirm is blocked inside the artifact sandbox)
   let confirmResolver = null;
-  function askConfirm(message){
+  function askConfirm(message){ return askConfirmAction(message, 'Delete'); }
+  function askConfirmAction(message, okLabel){
     return new Promise(resolve=>{
       confirmResolver = resolve;
       document.getElementById('confirmBody').textContent = message;
+      const ok = document.getElementById('confirmOkBtn');
+      ok.textContent = okLabel || 'Delete';
+      ok.className = 'btn ' + (okLabel && okLabel!=='Delete' ? 'btn-primary' : 'btn-danger');
       openDlg('dlgConfirm');
     });
   }
@@ -1277,6 +1281,27 @@
   function openSyncInfo(){
     const isLive = $('#syncStatus').classList.contains('live');
     $('#syncInfoTitle').textContent = isLive ? '🟢 Saved for everyone' : '🟠 Preview only — not saving';
+    if(fbMode){
+      const who = fbAuth && fbAuth.currentUser ? fbAuth.currentUser.email : null;
+      $('#syncInfoBody').textContent = isLive
+        ? 'Everything you add here is saved in our own Firebase database'+(who? ' (signed in as '+who+')' : '')+'. Danielle sees the same data when she opens this link.'
+        : 'Sign in with an allowed Google account to see and save everything.';
+      $('#syncInfoSteps').innerHTML = isLive
+        ? '<div style="display:flex; flex-direction:column; gap:8px; margin-top:6px;">'
+          + '<label class="btn btn-sm" style="align-self:flex-start;">Import data from a file…<input type="file" id="fbImportInput" accept="application/json,.json" hidden></label>'
+          + (who ? '<button type="button" class="btn btn-sm btn-ghost" id="fbSignOut2" style="align-self:flex-start; padding-left:0;">Sign out</button>' : '')+'</div>'
+        : '';
+      const imp = $('#fbImportInput');
+      if(imp) imp.addEventListener('change', async ()=>{
+        const f = imp.files[0]; if(!f) return;
+        if(await askConfirmAction('Import everything from '+f.name+'? Items with the same ID will be overwritten.', 'Import')){ closeDlg('dlgSyncInfo'); importHouseData(f); }
+        imp.value='';
+      });
+      const so = $('#fbSignOut2');
+      if(so) so.addEventListener('click', ()=>{ fbAuth.signOut().then(()=> location.reload()); });
+      openDlg('dlgSyncInfo');
+      return;
+    }
     if(isLive){
       $('#syncInfoBody').textContent = 'Everything you add here is being saved to shared storage. Danielle (or anyone else with access) will see it too, and it will still be here the next time anyone opens the app.';
       $('#syncInfoSteps').innerHTML = '';
@@ -3010,23 +3035,24 @@
   }
 
   // ---------- subscribe (live mode) ----------
-  function subscribeAll(){
-    db.collection(COL.bills).onSnapshot(snap=>{ state.bills=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
-    db.collection(COL.vet).onSnapshot(snap=>{ state.vet=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
-    db.collection(COL.events).onSnapshot(snap=>{ state.events=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
-    db.collection(COL.tasks).onSnapshot(snap=>{ state.tasks=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); autoClearDoneTasks(); }, ()=>{});
-    db.doc(TASK_SETTINGS_DOC).onSnapshot(snap=>{ state.taskSettings = snap.exists? snap.data() : null; taskSettingsLoaded = true; renderCurrent(); autoClearDoneTasks(); }, ()=>{});
-    db.collection(COL.shopLists).onSnapshot(snap=>{ state.shopLists=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
-    db.collection(COL.shopping).onSnapshot(snap=>{ state.shopping=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
-    db.collection(COL.documents).onSnapshot(snap=>{ state.documents=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
-    db.collection(COL.phones).onSnapshot(snap=>{ state.phones=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
-    db.doc(PET_DOC).onSnapshot(snap=>{ state.petFood = snap.exists? {id:snap.id, ...snap.data()} : null; renderCurrent(); }, ()=>{});
-    db.collection(COL.wishlist).onSnapshot(snap=>{ state.wishlist=snap.docs.map(d=>({id:d.id,...d.data()})); renderUs(); }, ()=>{});
-    db.collection(COL.memories).onSnapshot(snap=>{ state.memories=snap.docs.map(d=>({id:d.id,...d.data()})); renderUs(); }, ()=>{});
-    db.collection(COL.notes).onSnapshot(snap=>{ state.notes=snap.docs.map(d=>({id:d.id,...d.data()})); renderUs(); }, ()=>{});
-    db.collection(COL.countdowns).onSnapshot(snap=>{ state.countdowns=snap.docs.map(d=>({id:d.id,...d.data()})); renderUs(); }, ()=>{});
-    db.collection(COL.funnies).onSnapshot(snap=>{ state.funnies=snap.docs.map(d=>({id:d.id,...d.data()})); renderUs(); }, ()=>{});
-    db.collection(COL.people).onSnapshot(snap=>{ state.people=snap.docs.map(d=>({id:d.id,...d.data()})); renderPeople(); }, ()=>{});
+  function subscribeAll(onErr){
+    const E = (err)=>{ if(onErr) onErr(err); };
+    db.collection(COL.bills).onSnapshot(snap=>{ state.bills=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, E);
+    db.collection(COL.vet).onSnapshot(snap=>{ state.vet=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, E);
+    db.collection(COL.events).onSnapshot(snap=>{ state.events=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, E);
+    db.collection(COL.tasks).onSnapshot(snap=>{ state.tasks=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); autoClearDoneTasks(); }, E);
+    db.doc(TASK_SETTINGS_DOC).onSnapshot(snap=>{ state.taskSettings = snap.exists? snap.data() : null; taskSettingsLoaded = true; renderCurrent(); autoClearDoneTasks(); }, E);
+    db.collection(COL.shopLists).onSnapshot(snap=>{ state.shopLists=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, E);
+    db.collection(COL.shopping).onSnapshot(snap=>{ state.shopping=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, E);
+    db.collection(COL.documents).onSnapshot(snap=>{ state.documents=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, E);
+    db.collection(COL.phones).onSnapshot(snap=>{ state.phones=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, E);
+    db.doc(PET_DOC).onSnapshot(snap=>{ state.petFood = snap.exists? {id:snap.id, ...snap.data()} : null; renderCurrent(); }, E);
+    db.collection(COL.wishlist).onSnapshot(snap=>{ state.wishlist=snap.docs.map(d=>({id:d.id,...d.data()})); renderUs(); }, E);
+    db.collection(COL.memories).onSnapshot(snap=>{ state.memories=snap.docs.map(d=>({id:d.id,...d.data()})); renderUs(); }, E);
+    db.collection(COL.notes).onSnapshot(snap=>{ state.notes=snap.docs.map(d=>({id:d.id,...d.data()})); renderUs(); }, E);
+    db.collection(COL.countdowns).onSnapshot(snap=>{ state.countdowns=snap.docs.map(d=>({id:d.id,...d.data()})); renderUs(); }, E);
+    db.collection(COL.funnies).onSnapshot(snap=>{ state.funnies=snap.docs.map(d=>({id:d.id,...d.data()})); renderUs(); }, E);
+    db.collection(COL.people).onSnapshot(snap=>{ state.people=snap.docs.map(d=>({id:d.id,...d.data()})); renderPeople(); }, E);
   }
 
   // ---------- pull-to-refresh (drag down from the top to reload) ----------
@@ -3082,7 +3108,149 @@
     document.addEventListener('touchcancel', endPull, {passive:true});
   })();
 
+  // ---------- Firebase mode (when the page runs outside Claude, e.g. on GitHub Pages) ----------
+  // Fill in firebase-config.js next to this file to turn it on. Without it the page stays in preview mode.
+  const FB_VERSION = '10.14.1';
+  let fbMode = false, fbAuth = null;
+  function loadScript(src, timeoutMs){
+    return new Promise((resolve, reject)=>{
+      if(timeoutMs) setTimeout(()=> reject(new Error('timeout: '+src)), timeoutMs);
+      const s = document.createElement('script');
+      s.src = src; s.async = false;
+      s.onload = ()=> resolve(); s.onerror = ()=> reject(new Error('load failed: '+src));
+      document.head.appendChild(s);
+    });
+  }
+  function fbConfigured(cfg){ return cfg && cfg.apiKey && cfg.projectId && !/PASTE/i.test(cfg.apiKey); }
+  // Our Firebase project (the same one the GitHub version always used). These values are not secret —
+  // the Firestore / Storage security rules are what protect the data.
+  const HOJ_FIREBASE = {
+    apiKey: "AIzaSyAT2yffr2Y6QEBW-xqGe6JUNMMb_bnKTiM",
+    authDomain: "house-of-joy-e2824.firebaseapp.com",
+    projectId: "house-of-joy-e2824",
+    storageBucket: "house-of-joy-e2824.firebasestorage.app",
+    messagingSenderId: "135912399563",
+    appId: "1:135912399563:web:f00999a8798efa6810f14e",
+    signIn: "anonymous"   // "anonymous" (as before) or "google"
+  };
+  async function initFirebase(){
+    const cfg = Object.assign({}, HOJ_FIREBASE, window.HOJ_FIREBASE_CONFIG || {});
+    if(!fbConfigured(cfg)) return false;
+    try{
+      const base = 'https://www.gstatic.com/firebasejs/'+FB_VERSION+'/';
+      await loadScript(base+'firebase-app-compat.js', 15000);
+      await loadScript(base+'firebase-auth-compat.js', 15000);
+      await loadScript(base+'firebase-firestore-compat.js', 15000);
+      if(cfg.storageBucket && /PASTE/i.test(cfg.storageBucket)) cfg.storageBucket = '';
+      if(cfg.storageBucket){ try{ await loadScript(base+'firebase-storage-compat.js'); }catch(e){} }
+      const appCfg = Object.assign({}, cfg); delete appCfg.signIn;
+      firebase.initializeApp(appCfg);
+      try{ firebase.firestore().settings({ ignoreUndefinedProperties: true, merge: true }); }catch(e){}
+    }catch(e){
+      banner('warn', 'Couldn’t load Firebase — check your internet connection and reload.');
+      return true;
+    }
+    fbMode = true;
+    fbAuth = firebase.auth();
+    setSyncStatus('preview');
+    $('#syncLabel').textContent = 'Not signed in';
+    let started = false;
+    if(cfg.signIn !== 'google'){
+      try{ await fbAuth.signInAnonymously(); }
+      catch(err){
+        banner('warn', 'Couldn’t connect to our database: '+esc((err && (err.message||err.code))||'unknown error')+'. Check that Anonymous sign-in is still turned on in Firebase → Authentication.');
+        setSyncStatus('preview');
+        return true;
+      }
+    }
+    fbAuth.onAuthStateChanged(user=>{
+      if(!user){ if(cfg.signIn === 'google') showFbSignIn(); return; }
+      if(started) return;
+      started = true;
+      clearBanner();
+      db = firebase.firestore();
+      liveMode = true;
+      setSyncStatus('live');
+      if(firebase.storage && cfg.storageBucket){
+        const storage = firebase.storage();
+        assetsCap = {
+          upload: async (file)=>{
+            const path = 'uploads/'+Date.now()+'_'+(file.name||'file').replace(/[^\w.\-]+/g,'_');
+            const ref = storage.ref(path);
+            await ref.put(file, {contentType: file.type||undefined});
+            const url = await ref.getDownloadURL();
+            return { id: path, url, contentType: file.type };
+          },
+          list: async ()=> ({ assets: [] })
+        };
+      } else {
+        assetsCap = null;
+      }
+      subscribeAll(fbAccessError);
+    });
+    return true;
+  }
+  function showFbSignIn(){
+    banner('info', 'Sign in with your Google account to see and save our house stuff. <button type="button" class="btn btn-primary btn-sm" id="fbSignInBtn" style="margin-top:8px;">Sign in with Google</button>');
+    const b = $('#fbSignInBtn');
+    if(b) b.addEventListener('click', async ()=>{
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try{ await fbAuth.signInWithPopup(provider); }
+      catch(err){
+        if(err && (err.code==='auth/popup-blocked' || err.code==='auth/operation-not-supported-in-this-environment')){
+          try{ await fbAuth.signInWithRedirect(provider); }catch(e){ toast('Sign-in failed: '+(e.message||e.code)); }
+        } else if(err && err.code==='auth/unauthorized-domain'){
+          toast('This website isn’t on Firebase’s “Authorized domains” list yet.');
+        } else if(!(err && err.code==='auth/popup-closed-by-user')){
+          toast('Sign-in failed: '+((err && (err.message||err.code))||'try again'));
+        }
+      }
+    });
+  }
+  let fbErrorShown = false;
+  function fbAccessError(err){
+    if(fbErrorShown) return;
+    fbErrorShown = true;
+    const denied = err && (err.code==='permission-denied');
+    const who = fbAuth && fbAuth.currentUser ? fbAuth.currentUser.email : '';
+    banner('warn', denied
+      ? (who ? 'The account '+esc(who)+' isn’t allowed to open this house. Ask Tevel to add it to the Firestore rules. <button type="button" class="btn btn-sm" id="fbSignOutBtn" style="margin-top:8px;">Use another account</button>'
+             : 'Our database refused access — check the Firestore rules in Firebase.')
+      : 'Couldn’t load the data: '+esc((err && (err.message||err.code))||'unknown error'));
+    const so = $('#fbSignOutBtn');
+    if(so) so.addEventListener('click', ()=>{ fbAuth.signOut().then(()=> location.reload()); });
+    setSyncStatus('preview');
+    $('#syncLabel').textContent = denied ? 'No access' : 'Not saving';
+  }
+
+  // one-time import of the data exported from the Claude version
+  async function importHouseData(file){
+    let data;
+    const readText = f => (typeof f.text === 'function') ? f.text() : new Promise((res, rej)=>{ const r = new FileReader(); r.onload = ()=> res(r.result); r.onerror = rej; r.readAsText(f); });
+    try{ data = JSON.parse(await readText(file)); }catch(e){ toast('That file isn’t a House of Joy export.'); return; }
+    if(!data || typeof data !== 'object' || !data.collections){ toast('That file isn’t a House of Joy export.'); return; }
+    let n = 0;
+    try{
+      for(const [col, docs] of Object.entries(data.collections)){
+        for(const d of docs){
+          if(!d || !d.id) continue;
+          await db.collection(col).doc(d.id).set(d.data||{});
+          n++;
+        }
+      }
+      for(const [path, body] of Object.entries(data.docs||{})){
+        if(body) { await db.doc(path).set(body); n++; }
+      }
+      toast('Imported '+n+' items');
+    }catch(err){
+      toast('Import stopped: '+((err && (err.message||err.code))||'error'));
+    }
+  }
+
   async function init(){
+    if(!(window.claude && typeof window.claude.use === 'function')){
+      if(await initFirebase()) return;
+    }
     try{
       if(window.claude && typeof window.claude.use === 'function'){
         db = await window.claude.use('db');
