@@ -1,15 +1,7 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>House of Joy</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=Manrope:wght@400;500;600;700;800&display=swap">
 <style>
-  :root{color-scheme:light; box-sizing:border-box;}
-  html{scroll-padding-top:env(safe-area-inset-top,0px);}
-  img{max-width:100%;}
-  [hidden]:not([hidden=until-found]){display:none!important;}
   :root{
     --bg:#F3F5EF; --surface:#FFFFFF; --surface-2:#E9EEE5; --border:#D9E0D3;
     --text:#1C2620; --text-muted:#5B6A5E;
@@ -363,9 +355,63 @@
 
   .expiry-note{font-size:11.5px; margin-top:2px;}
 
+  /* view toggle + month navigator (bills) */
+  .view-toggle{display:inline-flex; background:var(--surface-2); border-radius:10px; padding:3px; gap:2px; flex:none;}
+  .view-toggle button{border:none; background:none; padding:6px 11px; border-radius:8px; font-size:12px; font-weight:700; color:var(--text-muted); cursor:pointer; font-family:inherit;}
+  .view-toggle button.on{background:var(--surface); color:var(--primary-strong); box-shadow:var(--shadow);}
+  .month-nav{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 14px; margin-bottom:12px;}
+  .month-nav-title{font-family:'Fraunces',serif; font-size:17px; font-weight:600; color:var(--primary-strong); text-align:center;}
+  .month-nav-sub{font-size:12px; color:var(--text-muted); text-align:center; margin-top:2px; font-variant-numeric:tabular-nums;}
+  .month-stats{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px;}
+  .month-stat{background:var(--surface); border:1px solid var(--border); border-radius:13px; padding:10px 12px;}
+  .month-stat small{display:block; font-size:10.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--text-muted);}
+  .month-stat strong{font-size:16px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--text);}
+  .month-stat.ok strong{color:var(--ok);} .month-stat.warn strong{color:var(--warn);}
+  .icon-btn.ghost-done{border-color:var(--ok); color:var(--ok); background:var(--ok-soft); cursor:default;}
+
+  /* calendar extras */
+  .mini-cal-dot.type-google{background:var(--info);}
+  .day-ev{display:flex; align-items:center; gap:8px; padding:6px 0;}
+  .day-ev + .day-ev{border-top:1px dashed var(--border);}
+  .day-ev .row-title{font-size:13.5px; flex:1; min-width:0; flex-wrap:wrap;}
+  .day-ev .icon-btn{width:30px; height:30px; border-radius:9px;}
+  .day-ev .icon-btn svg{width:15px; height:15px;}
+  .archive-btn{display:flex; align-items:center; justify-content:space-between; width:100%; margin-top:18px; padding:13px 14px; cursor:pointer; font:inherit; color:var(--text); text-align:left;}
+  .archive-btn strong{font-size:14px;} .archive-btn small{display:block; font-size:12px; color:var(--text-muted); font-weight:500; margin-top:2px;}
+  .archive-btn svg{width:18px; height:18px; color:var(--text-muted);}
+  .gear-pill{cursor:pointer; border:none; font-family:inherit;}
+  .gcal-card{padding:12px 14px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;}
+  .gcal-head{display:flex; align-items:center; gap:10px;}
+  .gcal-head strong{font-size:13.5px;} .gcal-head small{display:block; font-size:11.5px; color:var(--text-muted); font-weight:500;}
+  .gcal-msg{font-size:12px; color:var(--text-muted); line-height:1.4;}
+  .gcal-msg.err{color:var(--danger);}
+  .switch{position:relative; width:42px; height:24px; flex:none; margin-left:auto; border-radius:999px; background:var(--border); border:none; cursor:pointer; padding:0; transition:background .2s;}
+  .switch::after{content:""; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:999px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:transform .2s;}
+  .switch.on{background:var(--primary);} .switch.on::after{transform:translateX(18px);}
+  .gear-edit-list{display:flex; flex-direction:column; gap:6px;}
+  .gear-edit-row{display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:10px; background:var(--bg); border:1px solid var(--border); font-size:13.5px;}
+  .gear-edit-row span{flex:1; min-width:0; unicode-bidi:plaintext;}
+  .gear-edit-row .icon-btn{width:28px; height:28px;}
+  .gear-add{display:flex; gap:8px;}
+  .gear-add input{flex:1; font-family:inherit; font-size:14px; padding:9px 12px; border-radius:11px; border:1px solid var(--border); background:var(--bg); color:var(--text);}
+  .field .check-line, .check-line{display:flex; align-items:center; gap:9px; font-size:13.5px; font-weight:600; color:var(--text); cursor:pointer;}
+  .check-line input{width:18px; height:18px; accent-color:var(--primary);}
+
+  /* shopping lists */
+  .list-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px;}
+  .list-card{display:flex; flex-direction:column; gap:6px; padding:14px; cursor:pointer; text-align:left; font:inherit; color:var(--text); min-height:104px;}
+  .list-card:hover{border-color:var(--primary);}
+  .list-card-emoji{font-size:24px;}
+  .list-card-name{font-size:15px; font-weight:800; unicode-bidi:plaintext; overflow:hidden; text-overflow:ellipsis;}
+  .list-card-count{font-size:12px; color:var(--text-muted); font-weight:600;}
+  .list-card.new{border-style:dashed; align-items:center; justify-content:center; color:var(--primary); background:transparent; box-shadow:none;}
+  .list-head{display:flex; align-items:center; gap:10px; margin:2px 0 14px;}
+  .list-head h3{font-size:19px; font-weight:600; color:var(--primary-strong); flex:1; min-width:0; unicode-bidi:plaintext;}
+  .emoji-seg button{flex:0 0 auto; min-width:44px; font-size:18px;}
+  .done-note{font-size:11px; color:var(--text-muted);}
+  .field input[type=time]{font-family:inherit; font-size:14.5px; padding:10px 12px; border-radius:11px; border:1px solid var(--border); background:var(--bg); color:var(--text); width:100%;}
+  .field-row{display:flex; gap:10px;} .field-row .field{flex:1; min-width:0;}
 </style>
-</head>
-<body>
 
 <div class="app">
   <header class="topbar">
@@ -404,6 +450,7 @@
     <section class="tab-panel" id="tab-bills">
       <div class="panel-head">
         <div><h2>Did We Pay That?</h2><div class="panel-sub">Electricity, water, gas &amp; municipal tax</div></div>
+        <div class="view-toggle" id="billViewToggle"><button type="button" data-view="list">List</button><button type="button" data-view="month">By month</button></div>
       </div>
       <div id="billsList"></div>
     </section>
@@ -435,6 +482,18 @@
         <div class="mini-cal-grid" id="calGrid"></div>
         <div id="calSelectedPanel"></div>
       </div>
+      <div class="card gcal-card" id="gcalCard" hidden>
+        <div class="gcal-head">
+          <img src="tab-calendar.png" alt="" style="width:28px;height:28px;object-fit:contain;">
+          <div><strong>Google Calendar</strong><small id="gcalCalName">Show my Google events here</small></div>
+          <button type="button" class="switch" id="gcalSwitch" aria-label="Show Google Calendar events"></button>
+        </div>
+        <div class="gcal-msg" id="gcalMsg"></div>
+        <div id="gcalPickRow" hidden style="display:flex; gap:8px; align-items:center;">
+          <select id="gcalSelect" style="flex:1; font-family:inherit; font-size:13px; padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text);"></select>
+        </div>
+        <button type="button" class="btn btn-sm btn-ghost" id="gcalPickBtn" hidden style="align-self:flex-start; padding-left:0;">Choose which Google calendar</button>
+      </div>
       <div id="calendarList"></div>
     </section>
 
@@ -442,6 +501,12 @@
     <section class="tab-panel" id="tab-tasks">
       <div class="panel-head">
         <div><h2>Things We Swore We'd Do</h2><div class="panel-sub">Cleaning, maintenance &amp; recurring payments</div></div>
+      </div>
+      <div class="card gcal-card" style="margin-bottom:14px;">
+        <div class="gcal-head">
+          <div><strong>Auto-clear done tasks</strong><small>Erase tasks 7 days after they're marked done</small></div>
+          <button type="button" class="switch" id="autoClearSwitch" aria-label="Auto-clear done tasks after 7 days"></button>
+        </div>
       </div>
       <div id="tasksList"></div>
     </section>
@@ -451,15 +516,20 @@
       <div class="panel-head">
         <div><h2>We're Out of That Again</h2><div class="panel-sub">Groceries &amp; household supplies</div></div>
       </div>
-      <form class="quickadd" id="quickAddForm">
-        <input type="text" dir="auto" id="quickAddText" placeholder="Add an item…" required>
-        <select id="quickAddCat">
-          <option value="groceries">Groceries</option>
-          <option value="household">Household</option>
-        </select>
-        <button class="btn btn-primary btn-sm" type="submit">Add</button>
-      </form>
-      <div id="shoppingList"></div>
+      <div id="shopOverview"></div>
+      <div id="shopListView" hidden>
+        <div class="list-head">
+          <button type="button" class="icon-btn" id="shopBackBtn" title="All lists"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <h3 id="shopListTitle"></h3>
+          <button type="button" class="icon-btn" id="shopListEditBtn" title="Rename list"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+          <button type="button" class="icon-btn" id="shopListDelBtn" title="Delete list"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/></svg></button>
+        </div>
+        <form class="quickadd" id="quickAddForm">
+          <input type="text" dir="auto" id="quickAddText" placeholder="Add an item…" required>
+          <button class="btn btn-primary btn-sm" type="submit">Add</button>
+        </form>
+        <div id="shoppingList"></div>
+      </div>
     </section>
 
     <!-- DOCUMENTS -->
@@ -601,10 +671,13 @@
 
 <!-- VET VISIT -->
 <dialog id="dlgVet">
-  <div class="dlg-head"><h3>Add vet visit / document</h3><button class="icon-btn" data-close="dlgVet"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button></div>
+  <div class="dlg-head"><h3 id="dlgVetTitle">Add vet visit / document</h3><button class="icon-btn" data-close="dlgVet"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button></div>
   <form id="formVet">
     <div class="field"><label for="vetTitle">Title</label><input id="vetTitle" type="text" dir="auto" placeholder="e.g. Annual checkup, Rabies vaccine" required></div>
-    <div class="field"><label for="vetDate">Date</label><input id="vetDate" type="date" required></div>
+    <div class="field-row">
+      <div class="field"><label for="vetDate">Date</label><input id="vetDate" type="date" required></div>
+      <div class="field"><label for="vetTime">Time (optional)</label><input id="vetTime" type="time"></div>
+    </div>
     <div class="field"><label for="vetClinic">Vet / clinic</label><input id="vetClinic" type="text" dir="auto" placeholder="Optional"></div>
     <div class="field"><label for="vetNotes">Notes</label><textarea id="vetNotes" dir="auto" placeholder="Optional"></textarea></div>
     <div class="field"><label>Document / photo</label>
@@ -634,6 +707,16 @@
       <div class="seg" id="eventWhoSeg"></div>
     </div>
     <div class="field"><label for="eventNotes">Notes</label><textarea id="eventNotes" dir="auto" placeholder="Optional"></textarea></div>
+    <div class="field">
+      <label class="check-line"><input type="checkbox" id="eventGearToggle"> 🎒 Add an equipment list</label>
+      <div id="eventGearBox" hidden style="display:flex; flex-direction:column; gap:8px; margin-top:4px;">
+        <div class="gear-edit-list" id="eventGearList"></div>
+        <div class="gear-add"><input type="text" dir="auto" id="eventGearInput" placeholder="e.g. Tent, sunscreen, charger…"><button type="button" class="btn btn-sm" id="eventGearAddBtn">Add</button></div>
+      </div>
+    </div>
+    <div class="field" id="eventGcalField" hidden>
+      <label class="check-line"><input type="checkbox" id="eventGcalToggle"> Also put this on my Google Calendar</label>
+    </div>
     <div class="dlg-actions"><button type="submit" class="btn btn-primary" id="eventSubmitBtn">Add event</button></div>
   </form>
 </dialog>
@@ -718,13 +801,46 @@
   <form id="formItem">
     <div class="field"><label for="itemName">Item</label><input id="itemName" type="text" dir="auto" required></div>
     <div class="field"><label for="itemQty">Quantity (optional)</label><input id="itemQty" type="text" dir="auto" placeholder="e.g. 2"></div>
-    <div class="field"><label>List</label>
-      <div class="seg" id="itemCatSeg">
-        <button type="button" class="on" data-val="groceries">Groceries</button>
-        <button type="button" data-val="household">Household</button>
-      </div>
+    <div class="field"><label for="itemListSelect">List</label>
+      <select id="itemListSelect"></select>
     </div>
     <div class="dlg-actions"><button type="submit" class="btn btn-primary">Save changes</button></div>
+  </form>
+</dialog>
+
+<!-- SHOPPING LIST (create / rename) -->
+<dialog id="dlgShopList">
+  <div class="dlg-head"><h3 id="dlgShopListTitle">New shopping list</h3><button class="icon-btn" data-close="dlgShopList"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button></div>
+  <form id="formShopList">
+    <div class="field"><label for="shopListName">List name</label><input id="shopListName" type="text" dir="auto" placeholder="e.g. Supermarket, Pharmacy, IKEA" required></div>
+    <div class="field"><label>Icon</label>
+      <div class="seg emoji-seg" id="shopListEmojiSeg">
+        <button type="button" class="on" data-val="🛒">🛒</button>
+        <button type="button" data-val="🧴">🧴</button>
+        <button type="button" data-val="💊">💊</button>
+        <button type="button" data-val="🐾">🐾</button>
+        <button type="button" data-val="🎉">🎉</button>
+        <button type="button" data-val="🏠">🏠</button>
+        <button type="button" data-val="🎁">🎁</button>
+      </div>
+    </div>
+    <div class="dlg-actions"><button type="submit" class="btn btn-primary" id="shopListSubmitBtn">Create list</button></div>
+  </form>
+</dialog>
+
+<!-- EVENT ARCHIVE -->
+<dialog id="dlgArchive">
+  <div class="dlg-head"><h3>🗂️ Past events</h3><button class="icon-btn" data-close="dlgArchive"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button></div>
+  <div style="padding:0 18px 20px; max-height:76vh; overflow-y:auto;" id="archiveList"></div>
+</dialog>
+
+<!-- EVENT EQUIPMENT LIST -->
+<dialog id="dlgGear">
+  <div class="dlg-head"><h3 id="gearTitle">🎒 What to bring</h3><button class="icon-btn" data-close="dlgGear"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button></div>
+  <form id="formGear">
+    <div class="filenote" id="gearSub"></div>
+    <div id="gearList"></div>
+    <div class="gear-add"><input type="text" dir="auto" id="gearInput" placeholder="Add something to bring…"><button type="submit" class="btn btn-primary btn-sm">Add</button></div>
   </form>
 </dialog>
 
@@ -859,29 +975,6 @@
   <div class="open-hint">TEVEL · DANIELLE · JOY</div>
 </div>
 
-<!-- ============================================================
-     FIREBASE SETUP — fill this in once you've created your free
-     Firebase project. See SETUP.md for the full step-by-step.
-     These "config" values are NOT secret — they're meant to be
-     public in client-side code like this; what actually protects
-     your data is the security rules you set on Firestore/Storage
-     (also in SETUP.md).
-     ============================================================ -->
-<script>
-  window.FIREBASE_CONFIG = {
-    apiKey: "AIzaSyAT2yffr2Y6QEBW-xqGe6JUNMMb_bnKTiM",
-    authDomain: "house-of-joy-e2824.firebaseapp.com",
-    projectId: "house-of-joy-e2824",
-    storageBucket: "house-of-joy-e2824.firebasestorage.app",
-    messagingSenderId: "135912399563",
-    appId: "1:135912399563:web:f00999a8798efa6810f14e"
-  };
-</script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
-
 <script>
 (function(){
   "use strict";
@@ -899,6 +992,11 @@
     const opts = {month:'short', day:'numeric'};
     if(d.getFullYear() !== new Date().getFullYear()) opts.year='numeric';
     return d.toLocaleDateString('en-US', opts);
+  }
+  function fmtTime(t){
+    if(!t) return '';
+    const m = /^(\d{1,2}):(\d{2})/.exec(t); if(!m) return t;
+    return m[1].padStart(2,'0')+':'+m[2];
   }
   function fmtMonth(iso){ return parseISO(iso).toLocaleDateString('en-US',{month:'long', year:'numeric'}); }
   function daysUntil(iso){ if(!iso) return null; return Math.round((parseISO(iso)-todayDate())/86400000); }
@@ -1023,7 +1121,7 @@
     if(e.key==='Enter' || e.key===' '){ e.preventDefault(); showOpenScreen(); }
   });
 
-  // custom confirm dialog (nicer looking than the native browser confirm())
+  // custom confirm (native window.confirm is blocked inside the artifact sandbox)
   let confirmResolver = null;
   function askConfirm(message){
     return new Promise(resolve=>{
@@ -1140,11 +1238,12 @@
 
   $('#todayLabel').textContent = new Date().toLocaleDateString('en-US',{weekday:'long', month:'long', day:'numeric'});
 
-  // ---------- backend (Firebase) ----------
-  let db=null, storageAvailable=false;
-  const COL = { bills:'bills', vet:'vet_visits', events:'calendar_events', tasks:'household_tasks', shopping:'shopping_list', documents:'house_documents', phones:'phone_numbers', wishlist:'wishlist_items', memories:'memory_box', notes:'love_notes', countdowns:'countdowns', funnies:'no_context', people:'household_people' };
+  // ---------- capabilities ----------
+  let db=null, assetsCap=null;
+  const COL = { bills:'bills', vet:'vet_visits', events:'calendar_events', tasks:'household_tasks', shopping:'shopping_list', documents:'house_documents', phones:'phone_numbers', wishlist:'wishlist_items', memories:'memory_box', notes:'love_notes', countdowns:'countdowns', funnies:'no_context', people:'household_people', shopLists:'shopping_lists' };
+  const TASK_SETTINGS_DOC = 'settings/tasks';
   const PET_DOC = 'pets/joy';
-  const state = { bills:[], vet:[], events:[], tasks:[], shopping:[], documents:[], phones:[], petFood:null, wishlist:[], memories:[], notes:[], countdowns:[], funnies:[], people:[] };
+  const state = { bills:[], vet:[], events:[], tasks:[], shopping:[], documents:[], phones:[], petFood:null, wishlist:[], memories:[], notes:[], countdowns:[], funnies:[], people:[], shopLists:[], taskSettings:null };
   let liveMode = false;
   let editingBillId = null;
   let editingEventId = null;
@@ -1156,6 +1255,11 @@
   let editingMemoryId = null;
   let editingCountdownId = null;
   let editingFunnyId = null;
+  let editingVetId = null;
+  let editingShopListId = null;
+  let openShopListId = null;
+  let gearEventId = null;
+  let eventGearDraft = [];
 
   function banner(kind, html){
     $('#bannerHost').innerHTML = '<div class="banner '+kind+'">'+ (kind==='warn'?ICON_BELL:'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="16.3" r="0.6"/></svg>') +'<span>'+html+'</span></div>';
@@ -1174,41 +1278,69 @@
     const isLive = $('#syncStatus').classList.contains('live');
     $('#syncInfoTitle').textContent = isLive ? '🟢 Saved for everyone' : '🟠 Preview only — not saving';
     if(isLive){
-      $('#syncInfoBody').textContent = 'Everything you add here is being saved to shared storage. Danielle (or anyone else who opens this link) will see it too, and it will still be here the next time anyone opens the app.';
+      $('#syncInfoBody').textContent = 'Everything you add here is being saved to shared storage. Danielle (or anyone else with access) will see it too, and it will still be here the next time anyone opens the app.';
       $('#syncInfoSteps').innerHTML = '';
     } else {
       $('#syncInfoBody').textContent = 'Right now this is a preview — anything you add, check off, or upload will disappear the moment you close or reload this page. It is NOT being saved for you or for Danielle.';
       $('#syncInfoSteps').innerHTML =
         '<strong style="color:var(--text);">To fix it:</strong><br>'+
-        '1. Finish the one-time Firebase setup described in SETUP.md — create a free Firebase project, enable Anonymous auth, Firestore and Storage.<br>'+
-        '2. Paste your project\'s config values into the FIREBASE_CONFIG block near the top of this file, replacing the PASTE_YOUR_… placeholders.<br>'+
-        '3. Re-upload the file to GitHub and reload the page. This dot should turn green.<br>'+
-        '4. If it was working before and suddenly isn\'t, check your internet connection and that the Firebase project hasn\'t been deleted or suspended.';
+        '1. Make sure you opened the app\'s real link (the one starting claude.ai/artifact/…) — not a copy, a screenshot, or a preview shown inside a chat.<br>'+
+        '2. Make sure you are signed in to your Claude account in this browser.<br>'+
+        '3. Open the Share menu on that page and set Danielle\'s access to “Can edit” (not just “Can view”) — and make sure your own access is “Can edit” too.<br>'+
+        '4. Reload the page after that. This dot should turn green.';
     }
     openDlg('dlgSyncInfo');
   }
 
   async function uploadFile(file){
     if(!file) return null;
-    if(!storageAvailable){
-      toast('File uploads need Firebase Storage to be set up — see SETUP.md.');
+    if(!assetsCap){
+      toast('File uploads need edit access to this page — ask the owner to share with "Can edit".');
       return null;
     }
     try{
-      const safeName = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
-      const path = 'uploads/' + Date.now() + '_' + Math.random().toString(36).slice(2,8) + '_' + safeName;
-      const ref = firebase.storage().ref(path);
-      await ref.put(file);
-      const url = await ref.getDownloadURL();
-      return { id: path, url: url, contentType: file.type || null };
+      const res = await assetsCap.upload(file);
+      return res;
     }catch(err){
       toast('Upload failed: ' + (err && err.message ? err.message : 'try again'));
       return null;
     }
   }
+  // Prefer the exact url returned at upload time; only reconstruct from the id
+  // (for older records saved before we started storing the url) as a fallback.
   function assetUrl(item){
-    if(!item || typeof item === 'string') return null;
-    return item.assetUrl || null;
+    if(!item) return null;
+    if(typeof item === 'string') return null;
+    if(item.assetUrl) return item.assetUrl;
+    return item.assetId ? ('/_blob/' + item.assetId) : null;
+  }
+
+  // One-time repair pass: older records only saved the asset id and relied on
+  // guessing its url as "/_blob/"+id, which doesn't reliably open. Look up each
+  // asset's real url from the assets store and patch the record with it.
+  async function repairAssetUrls(){
+    if(!assetsCap) return;
+    let list;
+    try{ list = await assetsCap.list(); }catch(e){ return; }
+    const idx = {};
+    (list && list.assets || []).forEach(a=>{ if(a && a.id) idx[a.id] = a.url; });
+    const groups = [
+      {arr: state.bills, col: COL.bills},
+      {arr: state.vet, col: COL.vet},
+      {arr: state.documents, col: COL.documents},
+      {arr: state.memories, col: COL.memories}
+    ];
+    let changed = false;
+    groups.forEach(g=>{
+      g.arr.forEach(item=>{
+        if(item.assetId && !item.assetUrl && idx[item.assetId]){
+          item.assetUrl = idx[item.assetId];
+          changed = true;
+          safeWrite(()=> db.collection(g.col).doc(item.id).update({assetUrl: idx[item.assetId]}));
+        }
+      });
+    });
+    if(changed){ renderCurrent(); renderUs(); }
   }
 
   async function safeWrite(fn, okMsg){
@@ -1221,35 +1353,97 @@
   }
 
   // ---------- render: bills ----------
+  let billView = 'list';
+  try{ billView = localStorage.getItem('hoj_bill_view') || 'list'; }catch(e){}
+  let billMonthY, billMonthM;
+  (function(){ const t=todayDate(); billMonthY=t.getFullYear(); billMonthM=t.getMonth(); })();
+  function monthKey(iso){ return (iso||'').slice(0,7); }
+
+  function billRow(b){
+    const d = daysUntil(b.dueDate);
+    let pill = '';
+    if(!b.paid){
+      if(d!==null && d<0) pill = '<span class="pill danger">'+Math.abs(d)+'d overdue</span>';
+      else if(d!==null && d<=3) pill = '<span class="pill warn">due in '+d+'d</span>';
+      else pill = '<span class="pill neutral">due '+fmtDate(b.dueDate)+'</span>';
+    } else {
+      pill = '<span class="pill ok">paid '+fmtDate(b.paidDate)+'</span>';
+    }
+    const recurPill = b.recurring ? '<span class="pill accent">'+(BILL_FREQ_LABEL[b.frequency]||'Regular')+'</span>' : '';
+    const lastPaidNote = b.recurring && b.lastPaidDate && billView==='list' ? '<span>last paid '+fmtDate(b.lastPaidDate)+'</span>' : '';
+    const url = assetUrl(b);
+    const checkTitle = b.recurring ? 'Mark paid & move to next due date' : ('Mark '+(b.paid?'unpaid':'paid'));
+    return '<div class="row">'
+      + '<div class="bill-icon">'+billIcon(b.type)+'</div>'
+      + '<div class="row-main"><div class="row-title">'+esc(b.type)+'</div><div class="row-meta">'+recurPill+pill+lastPaidNote+(b.notes? ' <span>'+esc(b.notes)+'</span>':'')+(url? ' <a class="doc-link" href="'+url+'" target="_blank" rel="noopener">'+ICON_DOC+' File</a>':'')+'</div></div>'
+      + '<div class="row-amount">'+money(b.amount)+'</div>'
+      + '<button class="icon-btn check'+(b.paid?' on':'')+'" data-act="toggle-bill" data-id="'+b.id+'" title="'+checkTitle+'"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></button>'
+      + '<button class="icon-btn" data-act="edit-bill" data-id="'+b.id+'" title="Edit">'+ICON_EDIT+'</button>'
+      + '<button class="icon-btn" data-act="del-bill" data-id="'+b.id+'" title="Delete">'+ICON_TRASH+'</button>'
+      + '</div>';
+  }
+  // a past payment of a regular bill (read-only record)
+  function billHistoryRow(b, p){
+    return '<div class="row">'
+      + '<div class="bill-icon">'+billIcon(b.type)+'</div>'
+      + '<div class="row-main"><div class="row-title">'+esc(b.type)+'</div><div class="row-meta"><span class="pill accent">'+(BILL_FREQ_LABEL[b.frequency]||'Regular')+'</span><span class="pill ok">paid '+fmtDate(p.paidDate)+'</span>'+(p.paidBy? '<span>· '+esc(p.paidBy)+'</span>':'')+'</div></div>'
+      + '<div class="row-amount">'+money(p.amount!=null? p.amount : b.amount)+'</div>'
+      + '<span class="icon-btn ghost-done" title="Paid (payment record)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>'
+      + '</div>';
+  }
+  function billsForMonth(key){
+    const out = []; // {b, hist?, paid, date, amount}
+    state.bills.forEach(b=>{
+      if(b.recurring){
+        if(monthKey(b.dueDate)===key) out.push({b, paid:false, date:b.dueDate, amount:Number(b.amount)||0});
+        const hist = Array.isArray(b.payments) ? b.payments : (b.lastPaidDate ? [{paidDate:b.lastPaidDate, dueDate:null, amount:b.amount}] : []);
+        hist.forEach(p=>{
+          if(monthKey(p.dueDate||p.paidDate)===key) out.push({b, hist:p, paid:true, date:p.paidDate, amount:Number(p.amount!=null?p.amount:b.amount)||0});
+        });
+      } else if(monthKey(b.dueDate)===key){
+        out.push({b, paid:!!b.paid, date:b.dueDate, amount:Number(b.amount)||0});
+      }
+    });
+    return out;
+  }
+
   function renderBills(){
     const host=$('#billsList');
+    $all('#billViewToggle button').forEach(x=> x.classList.toggle('on', x.dataset.view===billView));
     const items=[...state.bills];
+    if(billView==='month'){
+      const key = billMonthY+'-'+String(billMonthM+1).padStart(2,'0');
+      const entries = billsForMonth(key);
+      const unpaid = entries.filter(e=>!e.paid).sort((a,b)=> (a.date||'').localeCompare(b.date||''));
+      const paid = entries.filter(e=>e.paid).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+      const sum = arr => arr.reduce((t,e)=> t+e.amount, 0);
+      const label = new Date(billMonthY, billMonthM, 1).toLocaleDateString('en-US',{month:'long', year:'numeric'});
+      let html = '<div class="card month-nav">'
+        + '<button type="button" class="mini-cal-nav" data-billmonth="-1" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>'
+        + '<div><div class="month-nav-title">'+label+'</div><div class="month-nav-sub">'+entries.length+' bill'+(entries.length===1?'':'s')+'</div></div>'
+        + '<button type="button" class="mini-cal-nav" data-billmonth="1" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>'
+        + '</div>';
+      html += '<div class="month-stats">'
+        + '<div class="month-stat"><small>Total</small><strong>'+money(sum(entries))+'</strong></div>'
+        + '<div class="month-stat ok"><small>Paid</small><strong>'+money(sum(paid))+'</strong></div>'
+        + '<div class="month-stat warn"><small>Unpaid</small><strong>'+money(sum(unpaid))+'</strong></div>'
+        + '</div>';
+      if(!entries.length){
+        html += '<div class="card empty-state">'+ICON_EMPTY+'<p>No bills in '+label+'</p></div>';
+      } else {
+        html += '<div class="card row-list">';
+        html += '<div class="section-label" style="padding:0 14px; margin:14px 0 6px;">Unpaid'+(unpaid.length? ' · '+unpaid.length : '')+'</div>';
+        html += unpaid.length ? unpaid.map(e=>billRow(e.b)).join('') : '<div class="row"><div class="row-main" style="color:var(--text-muted); font-size:13px;">All paid this month. Nice.</div></div>';
+        html += '<div class="section-label" style="padding:0 14px; margin:18px 0 6px;">Paid'+(paid.length? ' · '+paid.length : '')+'</div>';
+        html += paid.length ? paid.map(e=> e.hist ? billHistoryRow(e.b, e.hist) : billRow(e.b)).join('') : '<div class="row"><div class="row-main" style="color:var(--text-muted); font-size:13px;">Nothing paid yet this month</div></div>';
+        html += '</div>';
+      }
+      host.innerHTML = html;
+      wireRowActions();
+      return;
+    }
     const unpaid = items.filter(b=>!b.paid).sort((a,b)=> (a.dueDate||'').localeCompare(b.dueDate||''));
     const paid = items.filter(b=>b.paid).sort((a,b)=> (b.paidDate||'').localeCompare(a.paidDate||''));
-
-    function billRow(b){
-      const d = daysUntil(b.dueDate);
-      let pill = '';
-      if(!b.paid){
-        if(d!==null && d<0) pill = '<span class="pill danger">'+Math.abs(d)+'d overdue</span>';
-        else if(d!==null && d<=3) pill = '<span class="pill warn">due in '+d+'d</span>';
-        else pill = '<span class="pill neutral">due '+fmtDate(b.dueDate)+'</span>';
-      } else {
-        pill = '<span class="pill ok">paid '+fmtDate(b.paidDate)+'</span>';
-      }
-      const recurPill = b.recurring ? '<span class="pill accent">'+(BILL_FREQ_LABEL[b.frequency]||'Regular')+'</span>' : '';
-      const lastPaidNote = b.recurring && b.lastPaidDate ? '<span>last paid '+fmtDate(b.lastPaidDate)+'</span>' : '';
-      const url = assetUrl(b);
-      const checkTitle = b.recurring ? 'Mark paid & move to next due date' : ('Mark '+(b.paid?'unpaid':'paid'));
-      return '<div class="row">'
-        + '<div class="bill-icon">'+billIcon(b.type)+'</div>'
-        + '<div class="row-main"><div class="row-title">'+esc(b.type)+'</div><div class="row-meta">'+recurPill+pill+lastPaidNote+(b.notes? ' <span>'+esc(b.notes)+'</span>':'')+(url? ' <a class="doc-link" href="'+url+'" target="_blank" rel="noopener">'+ICON_DOC+' File</a>':'')+'</div></div>'
-        + '<div class="row-amount">'+money(b.amount)+'</div>'
-        + '<button class="icon-btn check'+(b.paid?' on':'')+'" data-act="toggle-bill" data-id="'+b.id+'" title="'+checkTitle+'"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></button>'
-        + '<button class="icon-btn" data-act="edit-bill" data-id="'+b.id+'" title="Edit">'+ICON_EDIT+'</button>'
-        + '<button class="icon-btn" data-act="del-bill" data-id="'+b.id+'" title="Delete">'+ICON_TRASH+'</button>'
-        + '</div>';
-    }
 
     if(items.length===0){
       host.innerHTML = '<div class="card empty-state">'+ICON_EMPTY+'<p>No bills yet</p></div>';
@@ -1265,6 +1459,19 @@
 
     wireRowActions();
   }
+  $('#billViewToggle').addEventListener('click', e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    billView = b.dataset.view;
+    try{ localStorage.setItem('hoj_bill_view', billView); }catch(err){}
+    renderBills();
+  });
+  $('#billsList').addEventListener('click', e=>{
+    const b=e.target.closest('[data-billmonth]'); if(!b) return;
+    billMonthM += parseInt(b.dataset.billmonth,10);
+    if(billMonthM<0){ billMonthM=11; billMonthY--; }
+    if(billMonthM>11){ billMonthM=0; billMonthY++; }
+    renderBills();
+  });
 
   // ---------- render: pets ----------
   function renderPets(){
@@ -1317,14 +1524,16 @@
     function vetRow(v){
       const url = assetUrl(v);
       return '<div class="row"><div class="row-main"><div class="row-title">'+esc(v.title)+'</div>'
-        + '<div class="row-meta"><span class="pill info">'+fmtDate(v.date)+'</span>'+(v.clinic? ' <span>'+esc(v.clinic)+'</span>':'')+(v.notes? ' <span>· '+esc(v.notes)+'</span>':'')
+        + '<div class="row-meta"><span class="pill info">'+fmtDate(v.date)+(v.time? ' · '+fmtTime(v.time) : '')+'</span>'+(v.clinic? ' <span>'+esc(v.clinic)+'</span>':'')+(v.notes? ' <span>· '+esc(v.notes)+'</span>':'')
         + (url? ' <a class="doc-link" href="'+url+'" target="_blank" rel="noopener">'+ICON_DOC+' View file</a>':'')
         + '</div></div>'
+        + '<button class="icon-btn" data-act="edit-vet" data-id="'+v.id+'" title="Edit">'+ICON_EDIT+'</button>'
         + '<button class="icon-btn" data-act="del-vet" data-id="'+v.id+'" title="Delete">'+ICON_TRASH+'</button></div>';
     }
     const vetItems = [...state.vet];
-    const upcoming = vetItems.filter(v=>v.date>=todayISO()).sort((a,b)=>a.date.localeCompare(b.date));
-    const past = vetItems.filter(v=>v.date<todayISO()).sort((a,b)=>b.date.localeCompare(a.date));
+    const vk = v => (v.date||'')+'T'+(v.time||'99:99');
+    const upcoming = vetItems.filter(v=>v.date>=todayISO()).sort((a,b)=>vk(a).localeCompare(vk(b)));
+    const past = vetItems.filter(v=>v.date<todayISO()).sort((a,b)=>vk(b).localeCompare(vk(a)));
     $('#vetUpcoming').innerHTML = upcoming.length? '<div class="card row-list">'+upcoming.map(vetRow).join('')+'</div>' : '<div class="card empty-state">'+ICON_PAW+'<p>No upcoming appointments</p></div>';
     $('#vetPast').innerHTML = past.length? '<div class="section-label" style="margin-top:16px;">History</div><div class="card row-list">'+past.map(vetRow).join('')+'</div>' : '';
     wireRowActions();
@@ -1333,42 +1542,294 @@
   // ---------- render: calendar ----------
   const EVENT_TYPE_PILL = {weekend:'info', holiday:'accent', other:'neutral'};
   function eventTypeLabel(e){ return (e.type==='other' && e.customType) ? e.customType : (e.type||'other'); }
+  const ICON_ARCHIVE = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M10 13h4"/></svg>';
+  const ICON_CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+  const ICON_GCAL_ADD = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>';
+  function isPastEvent(e){ return (e.endDate||e.date) < todayISO(); }
+  function gearPill(e){
+    if(!Array.isArray(e.gear) || !e.gear.length) return '';
+    const done = e.gear.filter(g=>g.done).length;
+    return '<button type="button" class="pill '+(done===e.gear.length?'ok':'warn')+' gear-pill" data-act="open-gear" data-id="'+e.id+'" title="Equipment list">🎒 '+done+'/'+e.gear.length+'</button>';
+  }
+  function gcalPill(e){
+    if(!e.gcal) return '';
+    return e.gcal.link
+      ? '<a class="pill info" href="'+esc(e.gcal.link)+'" target="_blank" rel="noopener" style="text-decoration:none;">In Google ✓</a>'
+      : '<span class="pill info">In Google ✓</span>';
+  }
+  function evRow(e){
+    const range = e.endDate && e.endDate!==e.date ? fmtDate(e.date)+' – '+fmtDate(e.endDate) : fmtDate(e.date);
+    const canAddGoogle = gcal.available && !e.gcal && !isPastEvent(e);
+    return '<div class="row"><div class="row-main"><div class="row-title">'+esc(e.title)+'</div>'
+      + '<div class="row-meta"><span class="pill '+(EVENT_TYPE_PILL[e.type]||'neutral')+'">'+esc(eventTypeLabel(e))+'</span><span>'+range+'</span>'+(e.who && e.who!=='Both'? ' <span class="pill neutral">'+esc(e.who)+'</span>':'')+gearPill(e)+gcalPill(e)+(e.notes? ' <span>· '+esc(e.notes)+'</span>':'')+'</div></div>'
+      + (canAddGoogle? '<button class="icon-btn" data-act="gcal-add" data-id="'+e.id+'" title="Add to my Google Calendar">'+ICON_GCAL_ADD+'</button>' : '')
+      + '<button class="icon-btn" data-act="edit-event" data-id="'+e.id+'" title="Edit">'+ICON_EDIT+'</button>'
+      + '<button class="icon-btn" data-act="del-event" data-id="'+e.id+'" title="Delete">'+ICON_TRASH+'</button></div>';
+  }
   function renderCalendar(){
     const host=$('#calendarList');
     const items=[...state.events];
-    const upcoming = items.filter(e=> (e.endDate||e.date) >= todayISO()).sort((a,b)=>a.date.localeCompare(b.date));
-    const past = items.filter(e=> (e.endDate||e.date) < todayISO()).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,10);
-    function evRow(e){
-      const range = e.endDate && e.endDate!==e.date ? fmtDate(e.date)+' – '+fmtDate(e.endDate) : fmtDate(e.date);
-      return '<div class="row"><div class="row-main"><div class="row-title">'+esc(e.title)+'</div>'
-        + '<div class="row-meta"><span class="pill '+(EVENT_TYPE_PILL[e.type]||'neutral')+'">'+esc(eventTypeLabel(e))+'</span><span>'+range+'</span>'+(e.who && e.who!=='Both'? ' <span class="pill neutral">'+esc(e.who)+'</span>':'')+(e.notes? ' <span>· '+esc(e.notes)+'</span>':'')+'</div></div>'
-        + '<button class="icon-btn" data-act="edit-event" data-id="'+e.id+'" title="Edit">'+ICON_EDIT+'</button>'
-        + '<button class="icon-btn" data-act="del-event" data-id="'+e.id+'" title="Delete">'+ICON_TRASH+'</button></div>';
-    }
-    let groups='';
-    let lastMonth='';
+    const upcoming = items.filter(e=> !isPastEvent(e)).sort((a,b)=>a.date.localeCompare(b.date));
+    const pastCount = items.filter(isPastEvent).length;
+    let html='';
     if(upcoming.length===0){
-      groups = '<div class="card empty-state">'+ICON_EMPTY+'<p>Nothing on the calendar yet</p></div>';
+      html = '<div class="card empty-state">'+ICON_EMPTY+'<p>Nothing coming up on the calendar</p></div>';
     } else {
-      upcoming.forEach(e=>{
-        const m=fmtMonth(e.date);
-        if(m!==lastMonth){ groups += '<div class="section-label">'+m+'</div>'; lastMonth=m; }
-      });
-      let html='';
-      lastMonth='';
+      let lastMonth='';
       upcoming.forEach(e=>{
         const m=fmtMonth(e.date);
         if(m!==lastMonth){ if(lastMonth!=='') html+='</div>'; html+='<div class="section-label">'+m+'</div><div class="card row-list">'; lastMonth=m; }
         html+=evRow(e);
       });
       html+='</div>';
-      groups=html;
     }
-    let pastHtml='';
-    if(past.length){ pastHtml = '<div class="section-label" style="margin-top:18px;">Past</div><div class="card row-list">'+past.map(evRow).join('')+'</div>'; }
-    host.innerHTML = groups + pastHtml;
+    html += '<button type="button" class="card archive-btn" id="openArchiveBtn"><span style="display:flex; align-items:center; gap:10px;"><span class="bill-icon">'+ICON_ARCHIVE+'</span><span><strong>Archive</strong><small>'+(pastCount? pastCount+' past event'+(pastCount===1?'':'s') : 'Past events land here')+'</small></span></span>'+ICON_CHEVRON+'</button>';
+    host.innerHTML = html;
     renderMiniCal();
+    renderGcalCard();
+    if($('#dlgArchive').open) renderArchive();
+    if($('#dlgGear').open) renderGearDialog();
     wireRowActions();
+  }
+  function renderArchive(){
+    const host=$('#archiveList');
+    const past = state.events.filter(isPastEvent).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+    if(!past.length){ host.innerHTML = '<div class="us-empty">No past events yet</div>'; return; }
+    let html='', lastMonth='';
+    past.forEach(e=>{
+      const m=fmtMonth(e.date);
+      if(m!==lastMonth){ if(lastMonth!=='') html+='</div>'; html+='<div class="us-section-label">'+m+'</div><div class="card row-list">'; lastMonth=m; }
+      html+=evRow(e);
+    });
+    host.innerHTML = html+'</div>';
+  }
+  $('#calendarList').addEventListener('click', e=>{
+    if(e.target.closest('#openArchiveBtn')){ renderArchive(); openDlg('dlgArchive'); }
+  });
+
+  // ---------- equipment list (per event) ----------
+  function renderGearDialog(){
+    const ev = state.events.find(x=>x.id===gearEventId);
+    if(!ev){ closeDlg('dlgGear'); return; }
+    const gear = Array.isArray(ev.gear) ? ev.gear : [];
+    const done = gear.filter(g=>g.done).length;
+    $('#gearTitle').textContent = '🎒 '+ev.title;
+    $('#gearSub').textContent = gear.length ? done+' of '+gear.length+' packed' : 'Nothing on the list yet';
+    $('#gearList').innerHTML = gear.length ? '<div class="card row-list">'+gear.map((g,i)=>
+      '<div class="row" style="padding:10px 12px;">'
+      + '<div class="checkbox'+(g.done?' checked':'')+'" data-gear-toggle="'+i+'" role="checkbox" aria-checked="'+(g.done?'true':'false')+'"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></div>'
+      + '<div class="row-main"><div class="row-title'+(g.done?' done':'')+'" style="font-size:14px;">'+esc(g.text)+'</div></div>'
+      + '<button type="button" class="icon-btn" data-gear-del="'+i+'" title="Remove">'+ICON_TRASH+'</button></div>'
+    ).join('')+'</div>' : '';
+  }
+  function saveGear(mutator){
+    const ev = state.events.find(x=>x.id===gearEventId); if(!ev) return;
+    const gear = (Array.isArray(ev.gear) ? ev.gear : []).map(g=>({...g}));
+    mutator(gear);
+    ev.gear = gear; renderGearDialog();
+    const id = ev.id;
+    safeWrite(()=> db.collection(COL.events).doc(id).update({gear}));
+  }
+  $('#gearList').addEventListener('click', e=>{
+    const t=e.target.closest('[data-gear-toggle]');
+    if(t){ const i=+t.dataset.gearToggle; saveGear(g=>{ if(g[i]) g[i].done=!g[i].done; }); return; }
+    const d=e.target.closest('[data-gear-del]');
+    if(d){ const i=+d.dataset.gearDel; saveGear(g=>{ g.splice(i,1); }); }
+  });
+  $('#formGear').addEventListener('submit', e=>{
+    e.preventDefault();
+    const v=$('#gearInput').value.trim(); if(!v) return;
+    saveGear(g=>{ g.push({text:v, done:false}); });
+    $('#gearInput').value=''; $('#gearInput').focus();
+  });
+
+  // gear editor inside the add/edit event form
+  function renderEventGearDraft(){
+    $('#eventGearList').innerHTML = eventGearDraft.map((g,i)=>
+      '<div class="gear-edit-row"><span>'+esc(g.text)+'</span><button type="button" class="icon-btn" data-draft-del="'+i+'" title="Remove">'+ICON_TRASH+'</button></div>'
+    ).join('');
+  }
+  function addEventGearDraft(){
+    const v=$('#eventGearInput').value.trim(); if(!v) return;
+    eventGearDraft.push({text:v, done:false});
+    $('#eventGearInput').value=''; $('#eventGearInput').focus();
+    renderEventGearDraft();
+  }
+  $('#eventGearToggle').addEventListener('change', ()=>{ $('#eventGearBox').hidden = !$('#eventGearToggle').checked; if($('#eventGearToggle').checked) $('#eventGearInput').focus(); });
+  $('#eventGearAddBtn').addEventListener('click', addEventGearDraft);
+  $('#eventGearInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); addEventGearDraft(); } });
+  $('#eventGearList').addEventListener('click', e=>{
+    const d=e.target.closest('[data-draft-del]'); if(!d) return;
+    eventGearDraft.splice(+d.dataset.draftDel,1); renderEventGearDraft();
+  });
+  function setEventGearForm(gear){
+    eventGearDraft = Array.isArray(gear) ? gear.map(g=>({text:g.text, done:!!g.done})) : [];
+    $('#eventGearToggle').checked = eventGearDraft.length>0;
+    $('#eventGearBox').hidden = eventGearDraft.length===0;
+    $('#eventGearInput').value='';
+    renderEventGearDraft();
+  }
+
+  // ---------- Google Calendar (via the viewer's own connector) ----------
+  const GCAL = 'Google Calendar';
+  const gcal = { mcp:null, available:false, show:false, calendarId:null, calendarName:null, events:[], unwatch:null, watchKey:null, msg:'', err:false };
+  try{
+    gcal.show = localStorage.getItem('hoj_gcal_show')==='1';
+    gcal.calendarId = localStorage.getItem('hoj_gcal_id') || null;
+    gcal.calendarName = localStorage.getItem('hoj_gcal_name') || null;
+  }catch(e){}
+  function gcalErrText(err){
+    const code = err && err.code;
+    if(code==='server_not_connected' || code==='selection_required') return 'Google Calendar isn’t connected to your Claude account. Add it in claude.ai → Settings → Connectors, then reload.';
+    if(code==='needs_reauth') return 'Your Google Calendar connection expired — reconnect it in claude.ai → Settings → Connectors.';
+    if(code==='not_in_manifest' || code==='approval_required' || code==='consent_required') return 'This page isn’t allowed to use your Google Calendar yet. Turn the switch off and on again to be asked.';
+    if(code==='blocked_by_policy') return 'Your organization blocks Google Calendar here.';
+    if(code==='server_unavailable') return 'Google Calendar didn’t answer — it will try again shortly.';
+    if(code==='tool_error') return 'Google Calendar said: '+(err.message||'something went wrong');
+    return 'Couldn’t reach Google Calendar'+(err && err.message? ' ('+err.message+')' : '')+'.';
+  }
+  function gcalDateOnly(x){ if(!x) return null; return (x.date || x.dateTime || '').slice(0,10) || null; }
+  function gcalTimeOnly(x){ if(!x || !x.dateTime) return null; const m=/T(\d{2}:\d{2})/.exec(x.dateTime); return m? m[1] : null; }
+  function addDaysISO(iso, n){ const d=parseISO(iso); d.setDate(d.getDate()+n); return isoFromYMD(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function mapGcalEvents(payload){
+    const list = (payload && Array.isArray(payload.events)) ? payload.events : [];
+    const ownIds = new Set(state.events.map(e=> e.gcal && e.gcal.id).filter(Boolean));
+    return list.filter(ev=> ev && ev.status!=='cancelled' && !ownIds.has(ev.id)).map(ev=>{
+      const start = gcalDateOnly(ev.start);
+      let end = gcalDateOnly(ev.end) || start;
+      if(ev.start && ev.start.date && end && end>start) end = addDaysISO(end, -1); // all-day end is exclusive
+      return { id: ev.id, title: ev.summary || '(no title)', date: start, endDate: end, time: gcalTimeOnly(ev.start), link: ev.htmlLink || null };
+    }).filter(e=>e.date);
+  }
+  function gcalRange(){
+    const first = new Date(calViewYear, calViewMonth, 1);
+    const start = new Date(calViewYear, calViewMonth, 1 - first.getDay());
+    const end = new Date(start.getFullYear(), start.getMonth(), start.getDate()+42);
+    return { start: isoFromYMD(start.getFullYear(), start.getMonth(), start.getDate()), end: isoFromYMD(end.getFullYear(), end.getMonth(), end.getDate()) };
+  }
+  function gcalWatch(){
+    if(!gcal.available || !gcal.show){
+      if(gcal.unwatch){ gcal.unwatch(); gcal.unwatch=null; gcal.watchKey=null; }
+      gcal.events = [];
+      return;
+    }
+    const r = gcalRange();
+    const input = { startTime: r.start+'T00:00:00', endTime: r.end+'T00:00:00', pageSize: 250, orderBy: 'startTime' };
+    if(gcal.calendarId) input.calendarId = gcal.calendarId;
+    const key = JSON.stringify(input);
+    if(key===gcal.watchKey) return;
+    if(gcal.unwatch){ gcal.unwatch(); gcal.unwatch=null; }
+    gcal.watchKey = key;
+    gcal.msg = 'Loading Google events…'; gcal.err=false;
+    const handle = ev=>{
+      if(ev.type==='data'){
+        gcal.events = mapGcalEvents(ev.result && ev.result.payload);
+        gcal.msg = gcal.events.length ? '' : 'No Google events this month.'; gcal.err=false;
+      } else {
+        const code = ev.error && ev.error.code;
+        if(['needs_reauth','server_not_connected','blocked_by_policy','approval_required','not_in_manifest','selection_required','consent_required','not_granted'].includes(code)) gcal.events = [];
+        gcal.msg = gcalErrText(ev.error); gcal.err = true;
+      }
+      renderMiniCal(); renderGcalCard();
+    };
+    if(typeof gcal.mcp.watchTool === 'function'){
+      try{ gcal.unwatch = gcal.mcp.watchTool(GCAL, 'list_events', input, handle, { refetchInterval: 300000 }); return; }
+      catch(err){ /* fall back to a one-off read */ }
+    }
+    let live = true;
+    gcal.unwatch = ()=>{ live = false; };
+    gcal.mcp.callTool(GCAL, 'list_events', input)
+      .then(result=>{ if(live) handle({type:'data', result}); })
+      .catch(error=>{ if(live) handle({type:'error', error}); });
+  }
+  function renderGcalCard(){
+    const card = $('#gcalCard'); if(!card) return;
+    card.hidden = !gcal.available;
+    if(!gcal.available) return;
+    $('#gcalSwitch').classList.toggle('on', gcal.show);
+    $('#gcalSwitch').setAttribute('aria-pressed', gcal.show?'true':'false');
+    $('#gcalCalName').textContent = gcal.show ? 'Showing: '+(gcal.calendarName || 'my main calendar')+' (blue dots)' : 'Show my Google events on this calendar';
+    $('#gcalMsg').textContent = gcal.show ? gcal.msg : 'Each of you sees your own Google Calendar — it uses the Google account connected to your Claude account.';
+    $('#gcalMsg').classList.toggle('err', gcal.show && gcal.err);
+    $('#gcalPickBtn').hidden = !gcal.show || !$('#gcalPickRow').hidden;
+  }
+  $('#gcalSwitch').addEventListener('click', ()=>{
+    gcal.show = !gcal.show;
+    try{ localStorage.setItem('hoj_gcal_show', gcal.show?'1':'0'); }catch(e){}
+    gcal.watchKey = null;
+    gcalWatch(); renderGcalCard(); renderMiniCal();
+  });
+  $('#gcalPickBtn').addEventListener('click', async ()=>{
+    $('#gcalPickBtn').disabled = true;
+    try{
+      const res = await gcal.mcp.callTool(GCAL, 'list_calendars', { pageSize: 100 });
+      const cals = (res && res.payload && Array.isArray(res.payload.calendars)) ? res.payload.calendars : [];
+      const sel = $('#gcalSelect');
+      sel.innerHTML = '<option value="">My main calendar</option>' + cals.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.summary||c.id)+'</option>').join('');
+      sel.value = gcal.calendarId || '';
+      $('#gcalPickRow').hidden = false;
+      $('#gcalPickBtn').hidden = true;
+    }catch(err){
+      gcal.msg = gcalErrText(err); gcal.err = true; renderGcalCard();
+    }
+    $('#gcalPickBtn').disabled = false;
+  });
+  $('#gcalSelect').addEventListener('change', ()=>{
+    const sel = $('#gcalSelect');
+    gcal.calendarId = sel.value || null;
+    gcal.calendarName = sel.value ? sel.options[sel.selectedIndex].textContent : null;
+    try{
+      if(gcal.calendarId){ localStorage.setItem('hoj_gcal_id', gcal.calendarId); localStorage.setItem('hoj_gcal_name', gcal.calendarName); }
+      else { localStorage.removeItem('hoj_gcal_id'); localStorage.removeItem('hoj_gcal_name'); }
+    }catch(e){}
+    $('#gcalPickRow').hidden = true;
+    gcalWatch(); renderGcalCard();
+  });
+  function gcalEventInput(e){
+    const end = addDaysISO(e.endDate || e.date, 1);
+    const lines = [];
+    if(e.notes) lines.push(e.notes);
+    if(Array.isArray(e.gear) && e.gear.length) lines.push('What to bring: '+e.gear.map(g=>g.text).join(', '));
+    lines.push('Added from House of Joy');
+    const input = { summary: e.title, allDay: true, startTime: e.date+'T00:00:00', endTime: end+'T00:00:00', description: lines.join('\n') };
+    if(gcal.calendarId) input.calendarId = gcal.calendarId;
+    return input;
+  }
+  async function gcalAddEvent(e){
+    if(!gcal.available) return;
+    try{
+      const res = await gcal.mcp.callTool(GCAL, 'create_event', gcalEventInput(e));
+      const p = res && res.payload;
+      const ev = (p && (p.event || p)) || {};
+      const info = { by: currentUser||null, calendarId: gcal.calendarId || null, addedAt: todayISO() };
+      if(ev.id) info.id = ev.id;
+      if(ev.htmlLink) info.link = ev.htmlLink;
+      await safeWrite(()=> db.collection(COL.events).doc(e.id).update({gcal: info}), 'Added to Google Calendar');
+      if(gcal.mcp.invalidate) gcal.mcp.invalidate(GCAL, 'list_events').catch(()=>{});
+    }catch(err){
+      toast(gcalErrText(err));
+    }
+  }
+  async function gcalUpdateEvent(e){
+    if(!gcal.available || !e.gcal || !e.gcal.id || e.gcal.by!==currentUser) return;
+    const input = gcalEventInput(e);
+    const upd = { eventId: e.gcal.id, summary: input.summary, allDay: true, startTime: input.startTime, endTime: input.endTime, description: input.description };
+    if(e.gcal.calendarId) upd.calendarId = e.gcal.calendarId;
+    try{ await gcal.mcp.callTool(GCAL, 'update_event', upd); toast('Google Calendar updated too'); }
+    catch(err){ toast('Saved here, but '+gcalErrText(err).charAt(0).toLowerCase()+gcalErrText(err).slice(1)); }
+  }
+  function syncEventGcalField(ev){
+    const show = gcal.available && !(ev && ev.gcal);
+    $('#eventGcalField').hidden = !show;
+    let pref = false; try{ pref = localStorage.getItem('hoj_gcal_autoadd')==='1'; }catch(e){}
+    $('#eventGcalToggle').checked = show && pref;
+  }
+  async function initGoogleCalendar(){
+    try{ gcal.mcp = await window.claude.use('mcp'); }catch(e){ gcal.mcp = null; }
+    gcal.available = !!gcal.mcp;
+    renderGcalCard();
+    gcalWatch();
+    if(activeTab==='calendar') renderCalendar();
   }
 
   // ---------- mini month calendar ----------
@@ -1377,20 +1838,24 @@
 
   function isoFromYMD(y,m,d){ const dt=new Date(y,m,d); dt.setMinutes(dt.getMinutes()-dt.getTimezoneOffset()); return dt.toISOString().slice(0,10); }
 
-  function eventsByDate(){
-    const map = {};
-    state.events.forEach(e=>{
+  function spreadByDate(list, map, tag){
+    list.forEach(e=>{
       if(!e.date) return;
       let cur = parseISO(e.date);
       const end = e.endDate ? parseISO(e.endDate) : cur;
       let guard=0;
       while(cur<=end && guard<370){
         const key = isoFromYMD(cur.getFullYear(), cur.getMonth(), cur.getDate());
-        (map[key] = map[key]||[]).push(e);
+        (map[key] = map[key]||[]).push(tag ? {...e, _google:true} : e);
         cur = new Date(cur.getFullYear(), cur.getMonth(), cur.getDate()+1);
         guard++;
       }
     });
+  }
+  function eventsByDate(){
+    const map = {};
+    spreadByDate(state.events, map, false);
+    if(gcal.show) spreadByDate(gcal.events, map, true);
     return map;
   }
 
@@ -1416,7 +1881,7 @@
     while(cells.length<42){ cells.push({d:nd, iso: isoFromYMD(nextY,nextM,nd), out:true}); nd++; }
     grid.innerHTML = cells.map(c=>{
       const evs = byDate[c.iso]||[];
-      const types = [...new Set(evs.map(e=>e.type||'other'))].slice(0,3);
+      const types = [...new Set(evs.map(e=> e._google ? 'google' : (e.type||'other')))].slice(0,3);
       const dots = types.map(t=>'<span class="mini-cal-dot type-'+esc(t)+'"></span>').join('');
       let cls='mini-cal-day';
       if(c.out) cls+=' out';
@@ -1431,20 +1896,28 @@
   function renderSelectedDayPanel(byDate){
     const host=$('#calSelectedPanel'); if(!host) return;
     if(!calSelectedDate){ host.innerHTML=''; return; }
-    const evs = byDate[calSelectedDate]||[];
-    host.innerHTML = '<div class="mini-cal-selected-panel"><div class="section-label" style="margin:0 0 8px;">'+fmtDate(calSelectedDate)+'</div>'
-      + evs.map(e=>'<div class="row-title" style="margin-bottom:6px; font-size:13.5px;"><span class="pill '+(EVENT_TYPE_PILL[e.type]||'neutral')+'">'+esc(eventTypeLabel(e))+'</span> '+esc(e.title)+'</div>').join('')
+    const evs = (byDate[calSelectedDate]||[]).slice().sort((a,b)=> (a._google?1:0)-(b._google?1:0) || (a.time||'').localeCompare(b.time||''));
+    host.innerHTML = '<div class="mini-cal-selected-panel"><div class="section-label" style="margin:0 0 6px;">'+fmtDate(calSelectedDate)+'</div>'
+      + evs.map(e=>{
+        if(e._google){
+          return '<div class="day-ev"><div class="row-title"><span class="pill info">Google'+(e.time? ' · '+esc(e.time) : '')+'</span> '+esc(e.title)+'</div>'
+            + (e.link? '<a class="doc-link" href="'+esc(e.link)+'" target="_blank" rel="noopener">Open</a>' : '')+'</div>';
+        }
+        return '<div class="day-ev"><div class="row-title"><span class="pill '+(EVENT_TYPE_PILL[e.type]||'neutral')+'">'+esc(eventTypeLabel(e))+'</span> '+esc(e.title)+' '+gearPill(e)+'</div>'
+          + '<button type="button" class="icon-btn" data-act="edit-event" data-id="'+e.id+'" title="Edit">'+ICON_EDIT+'</button>'
+          + '<button type="button" class="icon-btn" data-act="del-event" data-id="'+e.id+'" title="Delete">'+ICON_TRASH+'</button></div>';
+      }).join('')
       + '<button type="button" class="btn btn-sm btn-ghost" id="addEventForDayBtn" style="padding-left:0; padding-right:0;">+ Add event for this day</button>'
       + '</div>';
   }
 
   $('#calPrevBtn').addEventListener('click', ()=>{
     calViewMonth--; if(calViewMonth<0){ calViewMonth=11; calViewYear--; }
-    renderMiniCal();
+    renderMiniCal(); gcalWatch();
   });
   $('#calNextBtn').addEventListener('click', ()=>{
     calViewMonth++; if(calViewMonth>11){ calViewMonth=0; calViewYear++; }
-    renderMiniCal();
+    renderMiniCal(); gcalWatch();
   });
   $('#calGrid').addEventListener('click', e=>{
     const cell=e.target.closest('.mini-cal-day'); if(!cell) return;
@@ -1460,8 +1933,29 @@
   });
 
   // ---------- render: tasks ----------
+  const AUTO_CLEAR_DAYS = 7;
+  function autoClearOn(){ return !state.taskSettings || state.taskSettings.autoClear !== false; }
+  const autoClearedIds = new Set();
+  let taskSettingsLoaded = false;
+  function autoClearDoneTasks(){
+    if(!liveMode || !taskSettingsLoaded || !autoClearOn()) return;
+    const today = todayDate();
+    state.tasks.forEach(t=>{
+      if(!t.done || !t.completedDate || autoClearedIds.has(t.id)) return;
+      const age = Math.round((today - parseISO(t.completedDate))/86400000);
+      if(age >= AUTO_CLEAR_DAYS){
+        autoClearedIds.add(t.id);
+        db.collection(COL.tasks).doc(t.id).delete().catch(()=>{});
+      }
+    });
+  }
+  $('#autoClearSwitch').addEventListener('click', ()=>{
+    const next = !autoClearOn();
+    safeWrite(()=> db.doc(TASK_SETTINGS_DOC).set({autoClear: next, updatedBy: currentUser||null}), next ? 'Done tasks will clear after 7 days' : 'Auto-clear turned off');
+  });
   function renderTasks(){
     const host=$('#tasksList');
+    const sw=$('#autoClearSwitch'); if(sw){ sw.classList.toggle('on', autoClearOn()); sw.setAttribute('aria-pressed', autoClearOn()?'true':'false'); }
     const items=[...state.tasks];
     const todo = items.filter(t=>!t.done).sort((a,b)=>(a.nextDue||'').localeCompare(b.nextDue||''));
     const done = items.filter(t=>t.done).sort((a,b)=>(b.completedDate||'').localeCompare(a.completedDate||''));
@@ -1473,7 +1967,13 @@
       const isDone = !!t.done;
       const d=daysUntil(t.nextDue);
       let due;
-      if(isDone) due='<span class="pill ok">done '+fmtDate(t.completedDate)+'</span>';
+      if(isDone){
+        due='<span class="pill ok">done '+fmtDate(t.completedDate)+'</span>';
+        if(autoClearOn() && t.completedDate){
+          const left = AUTO_CLEAR_DAYS - Math.round((todayDate()-parseISO(t.completedDate))/86400000);
+          due += '<span class="done-note">clears '+(left<=0? 'today' : left===1? 'tomorrow' : 'in '+left+'d')+'</span>';
+        }
+      }
       else if(d===null) due='';
       else if(d<0) due='<span class="pill danger">'+Math.abs(d)+'d overdue</span>';
       else if(d===0) due='<span class="pill warn">due today</span>';
@@ -1504,35 +2004,133 @@
 
   // ---------- render: shopping ----------
   function itemOrder(i){ return (i.order!=null) ? i.order : (i.addedAt? Date.parse(i.addedAt) : 0); }
-  function renderShopping(){
-    const host=$('#shoppingList');
-    const items=[...state.shopping];
-    function group(cat,label){
-      const active = items.filter(i=>i.category===cat && !i.checked).sort((a,b)=> itemOrder(a)-itemOrder(b));
-      const checked = items.filter(i=>i.category===cat && i.checked);
-      function row(i, isActive){
-        const idx = isActive ? active.findIndex(x=>x.id===i.id) : -1;
-        const reorder = isActive
-          ? '<div class="reorder-col">'
-            + '<button class="reorder-btn" data-act="move-item-up" data-id="'+i.id+'" title="Move up"'+(idx<=0?' disabled':'')+'><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></button>'
-            + '<button class="reorder-btn" data-act="move-item-down" data-id="'+i.id+'" title="Move down"'+(idx===active.length-1?' disabled':'')+'><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>'
-            + '</div>'
-          : '<div class="reorder-spacer"></div>';
-        return '<div class="row">'
-          + reorder
-          + '<div class="row-main"><div class="row-title'+(i.checked?' done':'')+'">'+esc(i.item)+(i.qty? ' <span style="color:var(--text-muted);font-weight:600;">×'+esc(i.qty)+'</span>':'')+'</div></div>'
-          + '<button class="icon-btn check'+(i.checked?' on':'')+'" data-act="toggle-item" data-id="'+i.id+'" title="'+(i.checked?'Mark not bought':'Mark bought')+'"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></button>'
-          + '<button class="icon-btn" data-act="edit-item" data-id="'+i.id+'" title="Edit">'+ICON_EDIT+'</button>'
-          + '<button class="icon-btn" data-act="del-item" data-id="'+i.id+'" title="Delete">'+ICON_TRASH+'</button>'
-          + '</div>';
+  const LEGACY_LISTS = { groceries:{name:'Groceries', emoji:'🛒'}, household:{name:'Household', emoji:'🏠'} };
+  function listKeyOf(i){ return i.listId || i.category || 'groceries'; }
+  function allShopLists(){
+    const lists = state.shopLists.map(l=>({...l, virtual:false}));
+    const known = new Set(lists.map(l=>l.id));
+    state.shopping.forEach(i=>{
+      const k = listKeyOf(i);
+      if(!known.has(k)){
+        known.add(k);
+        const leg = LEGACY_LISTS[k] || {name:k, emoji:'🛒'};
+        lists.push({id:k, name:leg.name, emoji:leg.emoji, virtual:true, order:0});
       }
-      let html='<div class="section-label">'+label+(active.length? ' · '+active.length:'')+'</div>';
-      html += (active.length||checked.length) ? '<div class="card row-list">'+active.map(i=>row(i,true)).join('')+checked.map(i=>row(i,false)).join('')+'</div>' : '<div class="card empty-state" style="padding:20px;"><p>Nothing here</p></div>';
-      return html;
+    });
+    return lists.sort((a,b)=> ((a.order||0)-(b.order||0)) || (a.createdAt||'').localeCompare(b.createdAt||'') || (a.name||'').localeCompare(b.name||''));
+  }
+  function findShopList(id){ return allShopLists().find(l=>l.id===id) || null; }
+
+  function renderShopping(){
+    const lists = allShopLists();
+    if(openShopListId && !lists.find(l=>l.id===openShopListId)) openShopListId = null;
+    $('#shopOverview').hidden = !!openShopListId;
+    $('#shopListView').hidden = !openShopListId;
+    if(!openShopListId){
+      const cards = lists.map(l=>{
+        const its = state.shopping.filter(i=>listKeyOf(i)===l.id);
+        const left = its.filter(i=>!i.checked).length;
+        const count = its.length===0 ? 'Empty' : left===0 ? 'All bought ✓' : left+' to buy';
+        return '<button type="button" class="card list-card" data-open-list="'+esc(l.id)+'">'
+          + '<span class="list-card-emoji">'+esc(l.emoji||'🛒')+'</span>'
+          + '<span class="list-card-name">'+esc(l.name||'List')+'</span>'
+          + '<span class="list-card-count">'+count+'</span></button>';
+      }).join('');
+      $('#shopOverview').innerHTML = '<div class="section-label">Our lists · '+lists.length+'</div><div class="list-grid">'+cards
+        + '<button type="button" class="card list-card new" id="newShopListBtn"><span style="font-size:24px;">＋</span><span style="font-weight:800; font-size:13.5px;">New list</span></button></div>';
+      return;
     }
-    host.innerHTML = group('groceries','Groceries') + group('household','Household');
+    const list = findShopList(openShopListId);
+    $('#shopListTitle').textContent = (list.emoji? list.emoji+' ' : '') + (list.name||'List');
+    const host=$('#shoppingList');
+    const items = state.shopping.filter(i=>listKeyOf(i)===list.id);
+    const active = items.filter(i=>!i.checked).sort((a,b)=> itemOrder(a)-itemOrder(b));
+    const checked = items.filter(i=>i.checked);
+    function row(i, isActive){
+      const idx = isActive ? active.findIndex(x=>x.id===i.id) : -1;
+      const reorder = isActive
+        ? '<div class="reorder-col">'
+          + '<button class="reorder-btn" data-act="move-item-up" data-id="'+i.id+'" title="Move up"'+(idx<=0?' disabled':'')+'><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></button>'
+          + '<button class="reorder-btn" data-act="move-item-down" data-id="'+i.id+'" title="Move down"'+(idx===active.length-1?' disabled':'')+'><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>'
+          + '</div>'
+        : '<div class="reorder-spacer"></div>';
+      return '<div class="row">'
+        + reorder
+        + '<div class="row-main"><div class="row-title'+(i.checked?' done':'')+'">'+esc(i.item)+(i.qty? ' <span style="color:var(--text-muted);font-weight:600;">×'+esc(i.qty)+'</span>':'')+'</div></div>'
+        + '<button class="icon-btn check'+(i.checked?' on':'')+'" data-act="toggle-item" data-id="'+i.id+'" title="'+(i.checked?'Mark not bought':'Mark bought')+'"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></button>'
+        + '<button class="icon-btn" data-act="edit-item" data-id="'+i.id+'" title="Edit">'+ICON_EDIT+'</button>'
+        + '<button class="icon-btn" data-act="del-item" data-id="'+i.id+'" title="Delete">'+ICON_TRASH+'</button>'
+        + '</div>';
+    }
+    let html = '<div class="section-label">To buy'+(active.length? ' · '+active.length:'')+'</div>';
+    html += active.length ? '<div class="card row-list">'+active.map(i=>row(i,true)).join('')+'</div>' : '<div class="card empty-state" style="padding:20px;"><p>Nothing to buy here</p></div>';
+    if(checked.length){
+      html += '<div class="section-label" style="display:flex; align-items:center; justify-content:space-between;">In the cart · '+checked.length+'<button type="button" class="btn btn-sm btn-ghost" id="clearCheckedBtn" style="padding:0; text-transform:none; letter-spacing:0;">Clear bought items</button></div>';
+      html += '<div class="card row-list">'+checked.map(i=>row(i,false)).join('')+'</div>';
+    }
+    host.innerHTML = html;
     wireRowActions();
   }
+  function openShopList(id){ openShopListId = id; renderShopping(); window.scrollTo(0,0); }
+  $('#shopOverview').addEventListener('click', e=>{
+    if(e.target.closest('#newShopListBtn')){ openShopListDialog(null); return; }
+    const c=e.target.closest('[data-open-list]'); if(c) openShopList(c.dataset.openList);
+  });
+  $('#shopBackBtn').addEventListener('click', ()=>{ openShopListId=null; renderShopping(); });
+  $('#shopListEditBtn').addEventListener('click', ()=> openShopListDialog(openShopListId));
+  $('#shopListDelBtn').addEventListener('click', async ()=>{
+    const list = findShopList(openShopListId); if(!list) return;
+    const its = state.shopping.filter(i=>listKeyOf(i)===list.id);
+    if(!await askConfirm('Delete the list “'+(list.name||'List')+'”'+(its.length? ' and its '+its.length+' item'+(its.length===1?'':'s') : '')+'?')) return;
+    const id = list.id, isVirtual = list.virtual;
+    openShopListId = null;
+    safeWrite(async ()=>{
+      for(const i of its){ await db.collection(COL.shopping).doc(i.id).delete(); }
+      if(!isVirtual) await db.collection(COL.shopLists).doc(id).delete();
+    }, 'List deleted');
+    renderShopping();
+  });
+  $('#shoppingList').addEventListener('click', e=>{
+    if(!e.target.closest('#clearCheckedBtn')) return;
+    const its = state.shopping.filter(i=>listKeyOf(i)===openShopListId && i.checked);
+    safeWrite(async ()=>{ for(const i of its){ await db.collection(COL.shopping).doc(i.id).delete(); } }, 'Cleared');
+  });
+  function openShopListDialog(id){
+    editingShopListId = id;
+    $('#formShopList').reset();
+    const l = id ? findShopList(id) : null;
+    $('#dlgShopListTitle').textContent = l ? 'Edit list' : 'New shopping list';
+    $('#shopListSubmitBtn').textContent = l ? 'Save changes' : 'Create list';
+    $('#shopListName').value = l ? (l.name||'') : '';
+    segSet('shopListEmojiSeg', l ? (l.emoji||'🛒') : '🛒');
+    openDlg('dlgShopList');
+  }
+  $('#formShopList').addEventListener('submit', async e=>{
+    e.preventDefault();
+    const name = $('#shopListName').value.trim(); if(!name) return;
+    const emoji = segVal('shopListEmojiSeg') || '🛒';
+    if(editingShopListId){
+      const l = findShopList(editingShopListId);
+      const id = editingShopListId;
+      if(l && l.virtual){
+        await safeWrite(()=> db.collection(COL.shopLists).doc(id).set({name, emoji, order:0, createdAt: todayISO(), addedBy: currentUser||null}), 'List updated');
+      } else {
+        await safeWrite(()=> db.collection(COL.shopLists).doc(id).update({name, emoji}), 'List updated');
+      }
+      editingShopListId = null;
+      closeDlg('dlgShopList');
+      renderShopping();
+    } else {
+      const maxOrder = allShopLists().reduce((m,l)=> Math.max(m, l.order||0), 0);
+      let newId = null;
+      await safeWrite(async ()=>{
+        const ref = await db.collection(COL.shopLists).add({name, emoji, order: maxOrder+1, createdAt: todayISO(), addedBy: currentUser||null});
+        newId = ref && ref.id;
+      }, 'List created');
+      closeDlg('dlgShopList');
+      if(newId) openShopList(newId); else renderShopping();
+    }
+  });
 
   // ---------- render: documents ----------
   function renderDocuments(){
@@ -1775,15 +2373,30 @@
   let wired=false;
   function wireRowActions(){
     if(wired) return; wired=true;
-    document.getElementById('content').addEventListener('click', async e=>{
+    document.getElementById('content').addEventListener('click', onRowAction);
+    document.getElementById('archiveList').addEventListener('click', onRowAction);
+  }
+  async function onRowAction(e){
       const b=e.target.closest('[data-act]'); if(!b) return;
       const id=b.dataset.id, act=b.dataset.act;
-      if(act==='toggle-bill'){
+      if(act==='open-gear'){
+        e.preventDefault();
+        gearEventId = id; $('#gearInput').value='';
+        renderGearDialog(); openDlg('dlgGear');
+      } else if(act==='gcal-add'){
+        const ev=state.events.find(x=>x.id===id); if(!ev) return;
+        b.disabled = true;
+        await gcalAddEvent(ev);
+        b.disabled = false;
+      } else if(act==='toggle-bill'){
         const bill=state.bills.find(x=>x.id===id); if(!bill) return;
         if(bill.recurring){
           const today = todayISO();
           const next = addBillInterval(bill.dueDate, bill.frequency);
-          safeWrite(()=> db.collection(COL.bills).doc(id).update({paid:false, paidDate:null, lastPaidDate: today, dueDate: next}), 'Paid — next one due '+fmtDate(next));
+          const payments = (Array.isArray(bill.payments) ? bill.payments.slice() : (bill.lastPaidDate ? [{paidDate:bill.lastPaidDate, dueDate:null, amount:bill.amount}] : []));
+          payments.push({dueDate: bill.dueDate, paidDate: today, amount: Number(bill.amount)||0, paidBy: currentUser||null});
+          while(payments.length>60) payments.shift();
+          safeWrite(()=> db.collection(COL.bills).doc(id).update({paid:false, paidDate:null, lastPaidDate: today, dueDate: next, payments}), 'Paid — next one due '+fmtDate(next));
         } else {
           safeWrite(()=> db.collection(COL.bills).doc(id).update({paid:!bill.paid, paidDate: !bill.paid? todayISO(): null}));
         }
@@ -1804,6 +2417,18 @@
         openDlg('dlgBill');
       } else if(act==='del-bill'){
         if(await askConfirm('Delete this bill?')) safeWrite(()=> db.collection(COL.bills).doc(id).delete());
+      } else if(act==='edit-vet'){
+        const v=state.vet.find(x=>x.id===id); if(!v) return;
+        editingVetId = id;
+        $('#dlgVetTitle').textContent = 'Edit vet visit / document';
+        $('#vetTitle').value = v.title||'';
+        $('#vetDate').value = v.date||'';
+        $('#vetTime').value = v.time||'';
+        $('#vetClinic').value = v.clinic||'';
+        $('#vetNotes').value = v.notes||'';
+        $('#vetFile').value = '';
+        $('#vetFileNote').textContent = v.assetId? 'A file is already attached — choose a new one to replace it' : '';
+        openDlg('dlgVet');
       } else if(act==='del-vet'){
         if(await askConfirm('Delete this record?')) safeWrite(()=> db.collection(COL.vet).doc(id).delete());
       } else if(act==='edit-event'){
@@ -1819,6 +2444,8 @@
         $('#eventEnd').value = ev.endDate||'';
         renderEventWhoSeg(ev.who||'Both');
         $('#eventNotes').value = ev.notes||'';
+        setEventGearForm(ev.gear);
+        syncEventGcalField(ev);
         openDlg('dlgEvent');
       } else if(act==='del-event'){
         if(await askConfirm('Remove this from the calendar?')) safeWrite(()=> db.collection(COL.events).doc(id).delete());
@@ -1874,11 +2501,12 @@
         editingItemId = id;
         $('#itemName').value = it.item||'';
         $('#itemQty').value = it.qty||'';
-        segSet('itemCatSeg', it.category||'groceries');
+        $('#itemListSelect').innerHTML = allShopLists().map(l=>'<option value="'+esc(l.id)+'">'+esc((l.emoji? l.emoji+' ' : '')+(l.name||'List'))+'</option>').join('');
+        $('#itemListSelect').value = listKeyOf(it);
         openDlg('dlgItem');
       } else if(act==='move-item-up' || act==='move-item-down'){
         const it=state.shopping.find(x=>x.id===id); if(!it) return;
-        const siblings = state.shopping.filter(x=>x.category===it.category && !x.checked).sort((a,b)=> itemOrder(a)-itemOrder(b));
+        const siblings = state.shopping.filter(x=>listKeyOf(x)===listKeyOf(it) && !x.checked).sort((a,b)=> itemOrder(a)-itemOrder(b));
         const idx = siblings.findIndex(x=>x.id===id);
         const swapIdx = act==='move-item-up' ? idx-1 : idx+1;
         if(swapIdx<0 || swapIdx>=siblings.length) return;
@@ -1917,7 +2545,6 @@
       } else if(act==='del-phone'){
         if(await askConfirm('Delete this phone number?')) safeWrite(()=> db.collection(COL.phones).doc(id).delete());
       }
-    });
   }
 
   // ---------- row action wiring for "Us" dialogs (delegated once) ----------
@@ -1984,7 +2611,7 @@
     activeTab=name;
     $all('.tab').forEach(t=> t.classList.toggle('active', t.dataset.tab===name));
     $all('.tab-panel').forEach(p=> p.classList.toggle('active', p.id==='tab-'+name));
-    $('#fabBtn').style.display = name==='shopping' ? 'none' : '';
+
     renderCurrent();
     playTabMascot(name);
   }
@@ -2001,13 +2628,18 @@
     $('#eventOtherTypeField').style.display='none';
     renderEventWhoSeg('Both');
     $('#eventStart').value = iso || todayISO();
+    setEventGearForm([]);
+    syncEventGcalField(null);
   }
   const fabTarget = { bills:'dlgBill', pets:'dlgVet', calendar:'dlgEvent', tasks:'dlgTask', shopping:null, documents:'dlgDocument' };
   $('#fabBtn').addEventListener('click', ()=>{
     const target = fabTarget[activeTab];
-    if(!target){ $('#quickAddText').focus(); return; }
+    if(!target){
+      if(openShopListId) $('#quickAddText').focus(); else openShopListDialog(null);
+      return;
+    }
     if(target==='dlgBill'){ editingBillId=null; $('#dlgBillTitle').textContent='Add bill'; $('#formBill').reset(); segSet('billTypeSeg','Electricity'); segSet('billModeSeg','onetime'); segSet('billFreqSeg','monthly'); $('#billFreqField').style.display='none'; $('#billDueLabel').textContent='Due date'; $('#billDue').value=todayISO(); $('#billFileNote').textContent=''; }
-    if(target==='dlgVet'){ $('#formVet').reset(); $('#vetDate').value=todayISO(); $('#vetFileNote').textContent=''; }
+    if(target==='dlgVet'){ editingVetId=null; $('#dlgVetTitle').textContent='Add vet visit / document'; $('#formVet').reset(); $('#vetDate').value=todayISO(); $('#vetFileNote').textContent=''; }
     if(target==='dlgEvent'){ prepEventForm(todayISO()); }
     if(target==='dlgTask'){ editingTaskId=null; $('#dlgTaskTitle').textContent='Add task'; $('#taskSubmitBtn').textContent='Add task'; $('#formTask').reset(); segSet('taskCatSeg','cleaning'); $('#taskOtherCatField').style.display='none'; segSet('taskModeSeg','regular'); $('#taskFreqField').style.display=''; $('#taskNextLabel').textContent='Next due'; segSet('taskFreqSeg','weekly'); renderTaskAssignSeg('Both'); $('#taskNext').value=todayISO(); }
     if(target==='dlgDocument'){ editingDocId=null; $('#dlgDocumentTitle').textContent='Add document'; $('#docSubmitBtn').textContent='Save document'; $('#formDocument').reset(); segSet('docCatSeg','Lease'); renderDocOwnerSeg('Shared'); $('#docFileNote').textContent=''; }
@@ -2046,7 +2678,7 @@
     const el=document.getElementById(id);
     el.addEventListener('change', ()=>{
       const note=document.getElementById(id+'Note');
-      note.textContent = el.files[0] ? el.files[0].name + (storageAvailable? '' : ' — Firebase Storage not set up, saved without file') : '';
+      note.textContent = el.files[0] ? el.files[0].name + (assetsCap? '' : ' — uploads need edit access, saved without file') : '';
     });
   });
 
@@ -2111,12 +2743,19 @@
     const file=$('#vetFile').files[0];
     const uploaded = file? await uploadFile(file): null;
     const data={
-      title:$('#vetTitle').value.trim(), date:$('#vetDate').value,
-      clinic:$('#vetClinic').value.trim(), notes:$('#vetNotes').value.trim(),
-      assetId: uploaded? uploaded.id : null, assetUrl: uploaded? uploaded.url : null, assetContentType: file? file.type: null,
-      addedBy: currentUser, createdAt: todayISO()
+      title:$('#vetTitle').value.trim(), date:$('#vetDate').value, time:$('#vetTime').value||null,
+      clinic:$('#vetClinic').value.trim(), notes:$('#vetNotes').value.trim()
     };
-    await safeWrite(()=> db.collection(COL.vet).add(data), 'Saved');
+    if(file){ data.assetId = uploaded? uploaded.id : null; data.assetUrl = uploaded? uploaded.url : null; data.assetContentType = file.type; }
+    if(editingVetId){
+      const id = editingVetId;
+      await safeWrite(()=> db.collection(COL.vet).doc(id).update(data), 'Updated');
+      editingVetId = null;
+    } else {
+      if(!file){ data.assetId=null; data.assetUrl=null; data.assetContentType=null; }
+      data.addedBy = currentUser; data.createdAt = todayISO();
+      await safeWrite(()=> db.collection(COL.vet).add(data), 'Saved');
+    }
     closeDlg('dlgVet');
   });
 
@@ -2128,17 +2767,25 @@
       customType: type==='other' ? $('#eventOtherType').value.trim() : null,
       date:$('#eventStart').value, endDate:$('#eventEnd').value||null,
       who: segVal('eventWhoSeg')||'Both',
-      notes:$('#eventNotes').value.trim(), addedBy: currentUser
+      notes:$('#eventNotes').value.trim(), addedBy: currentUser,
+      gear: $('#eventGearToggle').checked ? eventGearDraft.map(g=>({text:g.text, done:!!g.done})) : []
     };
+    const wantGoogle = !$('#eventGcalField').hidden && $('#eventGcalToggle').checked;
+    if(!$('#eventGcalField').hidden){ try{ localStorage.setItem('hoj_gcal_autoadd', wantGoogle?'1':'0'); }catch(err){} }
+    closeDlg('dlgEvent');
     if(editingEventId){
       const id = editingEventId;
-      await safeWrite(()=> db.collection(COL.events).doc(id).update(data), 'Event updated');
+      const before = state.events.find(x=>x.id===id);
       editingEventId = null;
+      await safeWrite(()=> db.collection(COL.events).doc(id).update(data), 'Event updated');
+      if(before && before.gcal) gcalUpdateEvent({...before, ...data, id});
+      else if(wantGoogle) gcalAddEvent({...(before||{}), ...data, id});
     } else {
       data.createdAt = todayISO();
-      await safeWrite(()=> db.collection(COL.events).add(data), 'Added to calendar');
+      let newId = null;
+      await safeWrite(async ()=>{ const ref = await db.collection(COL.events).add(data); newId = ref && ref.id; }, 'Added to calendar');
+      if(wantGoogle && newId) gcalAddEvent({...data, id:newId});
     }
-    closeDlg('dlgEvent');
   });
 
   $('#formTask').addEventListener('submit', async e=>{
@@ -2287,7 +2934,8 @@
   $('#quickAddForm').addEventListener('submit', async e=>{
     e.preventDefault();
     const text=$('#quickAddText').value.trim(); if(!text) return;
-    const data={ item:text, category:$('#quickAddCat').value, qty:'', checked:false, order: Date.now(), addedBy:currentUser, addedAt: new Date().toISOString() };
+    if(!openShopListId) return;
+    const data={ item:text, listId: openShopListId, qty:'', checked:false, order: Date.now(), addedBy:currentUser, addedAt: new Date().toISOString() };
     await safeWrite(()=> db.collection(COL.shopping).add(data));
     $('#quickAddText').value='';
     $('#quickAddText').focus();
@@ -2297,7 +2945,7 @@
     e.preventDefault();
     if(!editingItemId){ closeDlg('dlgItem'); return; }
     const id = editingItemId;
-    const data={ item: $('#itemName').value.trim(), qty: $('#itemQty').value.trim(), category: segVal('itemCatSeg')||'groceries' };
+    const data={ item: $('#itemName').value.trim(), qty: $('#itemQty').value.trim(), listId: $('#itemListSelect').value || openShopListId };
     await safeWrite(()=> db.collection(COL.shopping).doc(id).update(data), 'Item updated');
     editingItemId = null;
     closeDlg('dlgItem');
@@ -2334,7 +2982,7 @@
   // stub db for demo mode so UI interactions don't throw
   function makeDemoDb(){
     function arrFor(path){
-      return {bills:state.bills, vet_visits:state.vet, calendar_events:state.events, household_tasks:state.tasks, shopping_list:state.shopping, house_documents:state.documents, phone_numbers:state.phones, wishlist_items:state.wishlist, memory_box:state.memories, love_notes:state.notes, countdowns:state.countdowns, no_context:state.funnies, household_people:state.people}[path];
+      return {bills:state.bills, vet_visits:state.vet, calendar_events:state.events, household_tasks:state.tasks, shopping_list:state.shopping, house_documents:state.documents, phone_numbers:state.phones, wishlist_items:state.wishlist, memory_box:state.memories, love_notes:state.notes, countdowns:state.countdowns, no_context:state.funnies, household_people:state.people, shopping_lists:state.shopLists}[path];
     }
     function refresh(){ renderCurrent(); renderUs(); renderPeople(); }
     return {
@@ -2344,7 +2992,7 @@
           doc(id){ return {
             update: async (patch)=>{ const it=arr.find(x=>x.id===id); if(it) Object.assign(it,patch); refresh(); },
             delete: async ()=>{ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); refresh(); },
-            set: async (data)=>{ const it=arr.find(x=>x.id===id); if(it) Object.assign(it,data); refresh(); }
+            set: async (data)=>{ const it=arr.find(x=>x.id===id); if(it) Object.assign(it,data); else arr.push({id, ...data}); refresh(); }
           };},
           add: async (data)=>{ data.id='demo'+Math.random().toString(36).slice(2,9); arr.push(data); refresh(); return {id:data.id}; }
         };
@@ -2352,6 +3000,9 @@
       doc(path){
         if(path===PET_DOC){
           return { set: async (data)=>{ state.petFood=data; refresh(); } };
+        }
+        if(path===TASK_SETTINGS_DOC){
+          return { set: async (data)=>{ state.taskSettings=data; refresh(); } };
         }
         return { set: async ()=>{}, update: async ()=>{} };
       }
@@ -2363,7 +3014,9 @@
     db.collection(COL.bills).onSnapshot(snap=>{ state.bills=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
     db.collection(COL.vet).onSnapshot(snap=>{ state.vet=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
     db.collection(COL.events).onSnapshot(snap=>{ state.events=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
-    db.collection(COL.tasks).onSnapshot(snap=>{ state.tasks=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
+    db.collection(COL.tasks).onSnapshot(snap=>{ state.tasks=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); autoClearDoneTasks(); }, ()=>{});
+    db.doc(TASK_SETTINGS_DOC).onSnapshot(snap=>{ state.taskSettings = snap.exists? snap.data() : null; taskSettingsLoaded = true; renderCurrent(); autoClearDoneTasks(); }, ()=>{});
+    db.collection(COL.shopLists).onSnapshot(snap=>{ state.shopLists=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
     db.collection(COL.shopping).onSnapshot(snap=>{ state.shopping=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
     db.collection(COL.documents).onSnapshot(snap=>{ state.documents=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
     db.collection(COL.phones).onSnapshot(snap=>{ state.phones=snap.docs.map(d=>({id:d.id,...d.data()})); renderCurrent(); }, ()=>{});
@@ -2430,26 +3083,21 @@
   })();
 
   async function init(){
-    const cfg = window.FIREBASE_CONFIG || {};
-    const configured = cfg.apiKey && cfg.apiKey.indexOf('PASTE_YOUR_') !== 0;
     try{
-      if(!configured) throw new Error('Firebase not configured yet');
-      if(typeof firebase === 'undefined') throw new Error('Firebase SDK did not load');
-      firebase.initializeApp(cfg);
-      await firebase.auth().signInAnonymously();
-      db = firebase.firestore();
-      storageAvailable = true;
-    }catch(e){
-      db = null;
-      console.error(e);
-    }
+      if(window.claude && typeof window.claude.use === 'function'){
+        db = await window.claude.use('db');
+      }
+    }catch(e){ db=null; }
     if(db){
       liveMode = true;
       setSyncStatus('live');
+      try{ assetsCap = await window.claude.use('assets'); }catch(e){ assetsCap=null; }
+      if(!assetsCap){ banner('info', 'You can view and edit everything here. To upload photos of bills, vet records or documents, ask to be given “Can edit” access.'); }
       subscribeAll();
+      if(assetsCap) setTimeout(repairAssetUrls, 1500);
+      initGoogleCalendar();
     } else {
       liveMode = false;
-      storageAvailable = false;
       setSyncStatus('preview');
       db = makeDemoDb();
       banner('warn', 'Preview mode — this isn’t saving. Tap the orange dot under the title for how to fix it.');
@@ -2460,5 +3108,5 @@
 
 })();
 </script>
-</body>
-</html>
+
+</body></html>
